@@ -9,7 +9,7 @@
 int main(void) {
 	
     consoleDemoInit();
-    printf("\nTemplate nds\n");
+    printf("\nNDSerum\n");
 
     while(1)
         swiWaitForVBlank();	

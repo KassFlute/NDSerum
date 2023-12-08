@@ -1,0 +1,6 @@
+build/
+.settings/
+ndserum.nds
+ndserum.elf
+ndserum.arm9
+.cproject
