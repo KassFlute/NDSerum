@@ -12,5 +12,6 @@ int main(void) {
     printf("\nNDSerum\n");
 
     while(1)
+    	printf("\nSUS BIGUS\n");
         swiWaitForVBlank();	
 }
