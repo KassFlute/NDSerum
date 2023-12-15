@@ -9,9 +9,7 @@ void SawFill(void* array, int frequency, int* length){
 
 	*length = periodSampleNumber;
 
-	double slope = ((MAXVALUE - MINVALUE)/ (double) MAXVALUE) / (double) periodSampleNumber;
-
-	short shortSlope = slope * MAXVALUE;
+	double slope = (MAXVALUE - MINVALUE)/ (double) periodSampleNumber;
 
 	short currentValue = MINVALUE;
 
@@ -19,7 +17,7 @@ void SawFill(void* array, int frequency, int* length){
 
 		newArray[i] = currentValue;
 
-		currentValue += shortSlope;
+		currentValue += slope;
 	}
 
 
