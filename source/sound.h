@@ -1,1 +1,4 @@
 #define SAMPLERATE 25000
+#define MINVALUE -32768
+#define MAXVALUE 32768
+

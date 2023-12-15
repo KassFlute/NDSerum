@@ -3,19 +3,23 @@
 
 void SawFill(void* array, int frequency, int* length){
 
+	short * newArray = (short *) array;
+
 	int periodSampleNumber = SAMPLERATE / frequency;
 
 	*length = periodSampleNumber;
 
-	//int slope = (valMax - valMin) / periodSampleNumber;
+	double slope = ((MAXVALUE - MINVALUE)/ (double) MAXVALUE) / (double) periodSampleNumber;
 
-	//int currentValue = valMin;
+	short shortSlope = slope * MAXVALUE;
+
+	short currentValue = MINVALUE;
 
 	for(int i = 0 ; i < periodSampleNumber ; i++){
 
-		//array[i] = currentValue;
+		newArray[i] = currentValue;
 
-		//currentValue += slope;
+		currentValue += shortSlope;
 	}
 
 
