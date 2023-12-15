@@ -15,9 +15,11 @@ int main(void) {
     int length = 0;
     short * array = (short*) malloc(sizeof(short) * 100);
 
-    SawFill(array,20,&length);
+    SawFill(array,15000,&length);
 
-    for(int i = 0 ; i<20;i++){
+    printf("lenght: %d\n",length);
+
+    for(int i = 0 ; i<length;i++){
     	 printf("%d \n",array[i]);
     }
 
