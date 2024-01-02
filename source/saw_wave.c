@@ -2,23 +2,36 @@
 #include "saw_wave.h"
 #include <stdio.h>
 
-void SawFill(void* array, int frequency, int* length){
 
-	short * newArray = (short *) array;
 
-	int periodSampleNumber = SAMPLERATE / frequency;
 
-	*length = periodSampleNumber;
 
-	double slope = (2*MAXVALUE) / (double) (periodSampleNumber-1);
+void SawWave(double slope,double samplesPerPeriod, int x, int16_t * array){
 
-	double currentValue = MINVALUE;
 
-	for(int i = 0 ; i < periodSampleNumber ; i++){
+	double y;
+	int actualPeriod;
 
-		newArray[i] = (short)currentValue;
+	for(int i = 0 ; i < x; i++){
 
-		currentValue += slope;
+		actualPeriod = i / samplesPerPeriod;
+
+		y = i * slope - (actualPeriod * 2 * MAXVALUE);
+		y = y - MAXVALUE;
+
+		array[i] = y;
+
+	}
+}
+
+
+void SawFill(int16_t* array, int sampleNumber,int16_t* current ){
+
+	for(int i = 0 ; i < sampleNumber ; i++){
+
+		array[2*i] = current[i];
+		array[2*i + 1] = current[i];
+
 	}
 
 

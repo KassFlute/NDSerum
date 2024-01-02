@@ -1,19 +1,20 @@
 #include "sound.h"
 #include "white_noise.h"
 
-void WhiteNoiseFill(void* array, int frequency, int* length){
+
+void WhiteNoiseFill(int16_t* array, int frequency, mm_word* length){
 
 	int nPeriod = NPeriodFromFrequency(frequency);
 
-	short * newArray = (short *) array;
-
 	int sampleNumber = SAMPLERATE / frequency * (nPeriod) ;
+
+	*length = sampleNumber;
 
 	for(int i = 0 ; i < sampleNumber ; i++){
 
-			newArray[i] = (short) rand();
+			array[2*i] = (short) rand();
+			array[2*i + 1] = (short) rand();
+
 		}
-
-
 
 }
