@@ -13,7 +13,7 @@ int actualFrequency;
 double slope;
 double samplesPerPeriod;
 int sampleNumber;
-int16_t current[SAMPLERATE *10] = {0};
+int16_t current[4800] = {0};
 
 void keys_ISR() {
 	printf("KEYS\n");
