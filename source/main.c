@@ -23,7 +23,7 @@ void keys_ISR() {
 
 	samplesPerPeriod = SAMPLERATE/ (double) actualFrequency;
 
-	sampleNumber = ((SAMPLERATE / samplesPerPeriod ) * nPeriod ) ;
+	sampleNumber = samplesPerPeriod  * nPeriod;
 
 	slope = (2*MAXVALUE) / samplesPerPeriod;
 
@@ -76,7 +76,7 @@ int main(void) {
 
 	samplesPerPeriod = SAMPLERATE/ (double) actualFrequency;
 
-	sampleNumber = ((SAMPLERATE / samplesPerPeriod ) * nPeriod ) ;
+	sampleNumber = samplesPerPeriod * nPeriod ;
 
 	slope = (2*MAXVALUE) / samplesPerPeriod;
 
