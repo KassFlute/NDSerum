@@ -20,10 +20,6 @@ int main_buffer_length; // à passer au méthode de remplissage pour quelle dise
 mm_word OnStreamRequest(mm_word length, mm_addr dest, mm_stream_formats format){
 	// should only do this
 
-	int targetlength = length;
-
-	printf("target length: %d\n",targetlength);
-
 	int16_t * target = dest;
 	int samples_to_copy = main_buffer_length;
 	for (int i = 0; i < samples_to_copy; i++) {
@@ -49,7 +45,7 @@ int main(void) {
 
    	mm_stream * myStream = malloc(sizeof(mm_stream));
 	myStream->sampling_rate = 48000;
-	myStream->buffer_length = 1200;
+	myStream->buffer_length = 4800;
 	myStream->callback = OnStreamRequest;
 	myStream->format = MM_STREAM_16BIT_STEREO;
 	myStream->timer = MM_TIMER0;
@@ -67,12 +63,12 @@ int main(void) {
     	scanKeys();
 		unsigned keys = keysDown();
 		if(keys == KEY_UP){
-			printf("UP\n");
-			actualFrequency += 100;
+			actualFrequency += 1000;
+			printf("Frequency: %d\n",actualFrequency);
 			SawFill(main_buffer,actualFrequency,&main_buffer_length); // Quentin à appeller dans saw_wave.c
 		}if(keys == KEY_DOWN){
-			printf("DOWN\n");
-			actualFrequency -= 100;
+			actualFrequency -= 1000;
+			printf("Frequency: %d\n",actualFrequency);
 			SawFill(main_buffer,actualFrequency,&main_buffer_length); // Quentin à appeller dans saw_wave.c
 		}
 		swiWaitForVBlank();
