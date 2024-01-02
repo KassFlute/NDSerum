@@ -5,8 +5,7 @@
 void WhiteNoiseFill(int16_t* array, int frequency, mm_word* length){
 
 	int nPeriod = NPeriodFromFrequency(frequency);
-
-	int sampleNumber = SAMPLERATE / frequency * (nPeriod) ;
+	int sampleNumber = SAMPLERATE / frequency * (nPeriod);
 
 	*length = sampleNumber;
 

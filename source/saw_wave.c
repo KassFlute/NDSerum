@@ -6,7 +6,7 @@
 
 
 
-void SawWave(double slope,double samplesPerPeriod, int x, int16_t * array){
+void SawWave(double slope, double samplesPerPeriod, int x, int16_t * array){
 
 
 	double y;
@@ -25,7 +25,7 @@ void SawWave(double slope,double samplesPerPeriod, int x, int16_t * array){
 }
 
 
-void SawFill(int16_t* array, int sampleNumber,int16_t* current ){
+void SawFill(int16_t* array, int sampleNumber, int16_t* current ){
 
 	for(int i = 0 ; i < sampleNumber ; i++){
 

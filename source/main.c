@@ -9,37 +9,47 @@
 #include "white_noise.h"
 #include "saw_wave.h"
 
-int actualFrequency;
-double slope;
-double samplesPerPeriod;
-int sampleNumber;
-int16_t current[4800] = {0};
+#define MAX(a, b) (((a) > (b)) ? (a) : (b))
+
+int actualFrequency; // Actual frequency of the sound
+double slope; // Quentin
+double samplesPerPeriod; // Quentin
+int sampleNumber; // Quentin
+int16_t main_buffer[4800]; // main buffer storing the sound (to be copied to the stream buffer)
+int main_buffer_length; // à passer au méthode de remplissage pour quelle disent combien elles ont écrit (en bytes)
 
 void keys_ISR() {
 	printf("KEYS\n");
 	actualFrequency += 100;
 
-	int nPeriod = NPeriodFromFrequency(actualFrequency);
+	int nPeriod = NPeriodFromFrequency(actualFrequency); // Quentin
 
-	samplesPerPeriod = SAMPLERATE/ (double) actualFrequency;
+	samplesPerPeriod = SAMPLERATE/ (double) actualFrequency; // Quentin
 
-	sampleNumber = samplesPerPeriod  * nPeriod;
+	sampleNumber = samplesPerPeriod  * nPeriod; // Quentin
 
-	slope = (2*MAXVALUE) / samplesPerPeriod;
+	slope = (2*MAXVALUE) / samplesPerPeriod; // Quentin
 
-	SawWave(slope, samplesPerPeriod,sampleNumber,current);
+	SawWave(slope, samplesPerPeriod,sampleNumber,current); // Quentin à appeller dans saw_wave.c
 }
 
 
 mm_word OnStreamRequest(mm_word length, mm_addr dest, mm_stream_formats format){
 
-	int16_t* array = dest;
+	int16_t* array = dest; // Quentin
+	mm_word tempLen = sampleNumber; // Quentin
+	SawFill(array,sampleNumber,current); // à appeller uniquement quand un parametre change
 
-	mm_word tempLen = sampleNumber;
 
-	SawFill(array,sampleNumber,current);
 
-	return tempLen;
+	// should only do this
+	int samples_to_copy = main_buffer_length;
+	for (int i = 0; i < samples_to_copy; i++) {
+		// Deux à la suite parce que stereo earrape sur la nds
+		dest++ = current[i];
+		dest++ = current[i];
+	}
+	return main_buffer_length;
 }
 
 int main(void) {
@@ -47,8 +57,6 @@ int main(void) {
     consoleDemoInit();
 
     printf("\nNDSerum\n");
-
-
 
     mm_ds_system sys;
    	sys.mod_count = 0;
@@ -72,20 +80,15 @@ int main(void) {
 
 	actualFrequency = 440;
 
-	int nPeriod = NPeriodFromFrequency(actualFrequency);
-
-	samplesPerPeriod = SAMPLERATE/ (double) actualFrequency;
-
-	sampleNumber = samplesPerPeriod * nPeriod ;
-
-	slope = (2*MAXVALUE) / samplesPerPeriod;
-
-	SawWave(slope, samplesPerPeriod,sampleNumber,current);
+	int nPeriod = NPeriodFromFrequency(actualFrequency); // Quentin
+	samplesPerPeriod = SAMPLERATE/ (double) actualFrequency; // Quentin
+	sampleNumber = samplesPerPeriod * nPeriod ; // Quentin
+	slope = (2*MAXVALUE) / samplesPerPeriod; // Quentin
+	SawWave(slope, samplesPerPeriod,sampleNumber,current); // Quentin à appeller dans saw_wave.c
 
 	mmStreamOpen(myStream);
 
     while(1){
-
 		swiWaitForVBlank();
     }
 }
