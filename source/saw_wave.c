@@ -25,14 +25,17 @@ void SawWave(double slope, double samplesPerPeriod, int x, int16_t * array){
 }
 
 
-void SawFill(int16_t* array, int sampleNumber, int16_t* current ){
+void SawFill(int16_t* array, int actualFrequency, int* length ){
 
-	for(int i = 0 ; i < sampleNumber ; i++){
+	int nPeriod = NPeriodFromFrequency(actualFrequency); // Quentin
+	double samplesPerPeriod = SAMPLERATE/ (double) actualFrequency; // Quentin
 
-		array[2*i] = current[i];
-		array[2*i + 1] = current[i];
+	int sampleNumber = samplesPerPeriod * nPeriod ; // Quentin
 
-	}
+	*length = sampleNumber;
 
+	double slope = (2*MAXVALUE) / samplesPerPeriod; // Quentin
+
+	SawWave(slope,samplesPerPeriod,sampleNumber,array);
 
 }

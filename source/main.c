@@ -12,42 +12,24 @@
 #define MAX(a, b) (((a) > (b)) ? (a) : (b))
 
 int actualFrequency; // Actual frequency of the sound
-double slope; // Quentin
-double samplesPerPeriod; // Quentin
-int sampleNumber; // Quentin
+
 int16_t main_buffer[4800]; // main buffer storing the sound (to be copied to the stream buffer)
+
 int main_buffer_length; // à passer au méthode de remplissage pour quelle disent combien elles ont écrit (en bytes)
 
-void keys_ISR() {
-	printf("KEYS\n");
-	actualFrequency += 100;
-
-	int nPeriod = NPeriodFromFrequency(actualFrequency); // Quentin
-
-	samplesPerPeriod = SAMPLERATE/ (double) actualFrequency; // Quentin
-
-	sampleNumber = samplesPerPeriod  * nPeriod; // Quentin
-
-	slope = (2*MAXVALUE) / samplesPerPeriod; // Quentin
-
-	SawWave(slope, samplesPerPeriod,sampleNumber,current); // Quentin à appeller dans saw_wave.c
-}
-
-
 mm_word OnStreamRequest(mm_word length, mm_addr dest, mm_stream_formats format){
-
-	int16_t* array = dest; // Quentin
-	mm_word tempLen = sampleNumber; // Quentin
-	SawFill(array,sampleNumber,current); // à appeller uniquement quand un parametre change
-
-
-
 	// should only do this
+
+	int targetlength = length;
+
+	printf("target length: %d\n",targetlength);
+
+	int16_t * target = dest;
 	int samples_to_copy = main_buffer_length;
 	for (int i = 0; i < samples_to_copy; i++) {
 		// Deux à la suite parce que stereo earrape sur la nds
-		dest++ = current[i];
-		dest++ = current[i];
+		*target++ = main_buffer[i];
+		*target++ = main_buffer[i];
 	}
 	return main_buffer_length;
 }
@@ -75,20 +57,24 @@ int main(void) {
 
 	REG_KEYCNT = (1<<14) | KEY_UP | KEY_DOWN | KEY_START | KEY_A;
 
-	irqSet(IRQ_KEYS,&keys_ISR);
-	irqEnable(IRQ_KEYS);
-
 	actualFrequency = 440;
 
-	int nPeriod = NPeriodFromFrequency(actualFrequency); // Quentin
-	samplesPerPeriod = SAMPLERATE/ (double) actualFrequency; // Quentin
-	sampleNumber = samplesPerPeriod * nPeriod ; // Quentin
-	slope = (2*MAXVALUE) / samplesPerPeriod; // Quentin
-	SawWave(slope, samplesPerPeriod,sampleNumber,current); // Quentin à appeller dans saw_wave.c
+	SawFill(main_buffer,actualFrequency,&main_buffer_length);
 
 	mmStreamOpen(myStream);
 
     while(1){
+    	scanKeys();
+		unsigned keys = keysDown();
+		if(keys == KEY_UP){
+			printf("UP\n");
+			actualFrequency += 100;
+			SawFill(main_buffer,actualFrequency,&main_buffer_length); // Quentin à appeller dans saw_wave.c
+		}if(keys == KEY_DOWN){
+			printf("DOWN\n");
+			actualFrequency -= 100;
+			SawFill(main_buffer,actualFrequency,&main_buffer_length); // Quentin à appeller dans saw_wave.c
+		}
 		swiWaitForVBlank();
     }
 }
