@@ -61,7 +61,6 @@ int main(void) {
 		if(keys == KEY_A) {
 			PauseResumeSound();
 			printf("Playing: %d\n", IsPlaying());
-			DrawWaveMain(main_buffer, main_buffer_length, 1,0);
 		}
 		swiWaitForVBlank();
     }
