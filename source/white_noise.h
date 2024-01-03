@@ -1,3 +1,3 @@
-//Fills the array passed as argument with samples and then writes it's length in the int passed as argument
+#include "sound.h"
 
-void WhiteNoiseFill(int16_t* array, int frequency, mm_word* length);
+void WhiteNoiseFill(int16_t* array, int frequency, int* length);

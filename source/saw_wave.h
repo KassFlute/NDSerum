@@ -1,4 +1,5 @@
-
+#include "sound.h"
+#include <stdio.h>
 
 void SawWave(double slope,double samplesPerPeriod, int x, int16_t* array);
 

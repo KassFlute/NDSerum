@@ -1,13 +1,6 @@
-#include "sound.h"
 #include "saw_wave.h"
-#include <stdio.h>
-
-
-
-
 
 void SawWave(double slope, double samplesPerPeriod, int x, int16_t * array){
-
 	double y;
 	int actualPeriod;
 
@@ -23,9 +16,7 @@ void SawWave(double slope, double samplesPerPeriod, int x, int16_t * array){
 	}
 }
 
-
 void SawFill(int16_t* array, int actualFrequency, int* length ){
-
 	int nPeriod = NPeriodFromFrequency(actualFrequency); // Quentin
 	double samplesPerPeriod = SAMPLERATE/ (double) actualFrequency; // Quentin
 

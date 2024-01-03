@@ -5,79 +5,63 @@
 
 #include <nds.h>
 #include <stdio.h>
+#include <stdlib.h>
+
+#include "globals.h"
 #include "sound.h"
-#include "white_noise.h"
-#include "saw_wave.h"
 #include "main_screen.h"
 
-#define MAX(a, b) (((a) > (b)) ? (a) : (b))
+// Uncomment the following line to enable debug mode
+#define DEBUG
 
-int actualFrequency; // Actual frequency of the sound
+#define MAX(a, b) (((a) > (b)) ? (a) : (b))
+#define MIN(a, b) (((a) < (b)) ? (a) : (b))
 
 int16_t main_buffer[4800]; // main buffer storing the sound (to be copied to the stream buffer)
-
-int main_buffer_length; // à passer au méthode de remplissage pour quelle disent combien elles ont écrit (en bytes)
-
-mm_word OnStreamRequest(mm_word length, mm_addr dest, mm_stream_formats format){
-	// should only do this
-
-	int16_t * target = dest;
-	int samples_to_copy = main_buffer_length;
-	for (int i = 0; i < samples_to_copy; i++) {
-		// Deux à la suite parce que stereo earrape sur la nds
-		*target++ = main_buffer[i];
-		*target++ = main_buffer[i];
-	}
-	return main_buffer_length;
-}
+int main_buffer_length;    // à passer aux méthodes de remplissage pour quelle disent combien elles ont écrit (en bytes)
 
 int main(void) {
-	
-    consoleDemoInit();
 
-    printf("\nNDSerum\n");
+	#ifdef DEBUG
+		consoleDemoInit();
+		printf("\nNDSerum\n");
+		printf("Debug mode is on.\n");
+	#endif
 
-    mm_ds_system sys;
-   	sys.mod_count = 0;
-   	sys.samp_count = 0;
-   	sys.mem_bank = 0;
-   	sys.fifo_channel = FIFO_MAXMOD;
-   	mmInit(&sys);
+	InitSound(); // Initialize the sound system
 
-   	mm_stream * myStream = malloc(sizeof(mm_stream));
-	myStream->sampling_rate = 48000;
-	myStream->buffer_length = 4800;
-	myStream->callback = OnStreamRequest;
-	myStream->format = MM_STREAM_16BIT_STEREO;
-	myStream->timer = MM_TIMER0;
-	myStream->manual = 0;
+	#ifdef DEBUG
+		printf("Sound system initialized.\n");
+	#endif
+
 
 	REG_KEYCNT = (1<<14) | KEY_UP | KEY_DOWN | KEY_START | KEY_A;
 
-	actualFrequency = 440;
-
-	SawFill(main_buffer,actualFrequency,&main_buffer_length);
-
 	InitMainScreen();
-
 	DrawWaveMain(main_buffer, main_buffer_length,1,0);
-
-	mmStreamOpen(myStream);
-
 
     while(1){
     	scanKeys();
 		unsigned keys = keysDown();
-		if(keys == KEY_UP){
-			actualFrequency += 10;
-			printf("Frequency: %d\n",actualFrequency);
-			SawFill(main_buffer,actualFrequency,&main_buffer_length); // Quentin à appeller dans saw_wave.c
+		if(keys == KEY_UP) {
+			IncrementFrequency10();
+			printf("Frequency: %d\n", GetFrequency());
 			DrawWaveMain(main_buffer, main_buffer_length,1,0);
-		}if(keys == KEY_DOWN){
-			actualFrequency -= 10;
-			printf("Frequency: %d\n",actualFrequency);
-			SawFill(main_buffer,actualFrequency,&main_buffer_length); // Quentin à appeller dans saw_wave.c
-			DrawWaveMain(main_buffer, main_buffer_length,1,0);
+		}
+		if(keys == KEY_DOWN) {
+			DecrementFrequency10();
+			printf("Frequency: %d\n", GetFrequency());
+			DrawWaveMain(main_buffer, main_buffer_length, 1,0);
+		}
+		if(keys == KEY_START) {
+			IncrementWaveType();
+			printf("Wave type: %d\n", GetWaveType());
+			DrawWaveMain(main_buffer, main_buffer_length, 1,0);
+		}
+		if(keys == KEY_A) {
+			printf("A pressed\n");
+			printf("Pause to be implemented\n");
+			DrawWaveMain(main_buffer, main_buffer_length, 1,0);
 		}
 		swiWaitForVBlank();
     }
