@@ -51,8 +51,8 @@ void InitSound() {
 	mmInit(&sys);
 
 	mm_stream *myStream = malloc(sizeof(mm_stream));
-	myStream->sampling_rate = 48000;
-	myStream->buffer_length = 9600;
+	myStream->sampling_rate = SAMPLERATE;
+	myStream->buffer_length = BUFFERLENGTH;
 	myStream->callback = OnStreamRequest;
 	myStream->format = MM_STREAM_16BIT_STEREO;
 	myStream->timer = MM_TIMER0;
@@ -67,13 +67,13 @@ void InitSound() {
 
 int NPeriodFromFrequency(int frequency) {
 	/*
-	 * Return the number of period of the wave to fill depending on the frequency
+	 * Return the number of period of the wave to fill depending on the frequency and the number of samples
 	 * @param frequency : the frequency of the wave
 	 * @return the number of period of the wave to fill
 	 */
-	if(frequency < 10) return 1;
-	if(frequency > 20000) return 2000;
-	return frequency/10;
+	int nPeriod = frequency / 10;
+	// Clamp the number between 1 and 10000
+	return MAX(MIN(nPeriod, 10000), 1);
 }
 
 void FillBuffer() {
