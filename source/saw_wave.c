@@ -1,5 +1,7 @@
 #include "saw_wave.h"
 
+#include <stdio.h>
+
 void SawWave(double slope, double samplesPerPeriod, int x, int16_t * array){
 	double y;
 	int actualPeriod;
