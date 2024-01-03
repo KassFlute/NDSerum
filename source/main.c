@@ -8,6 +8,7 @@
 #include "sound.h"
 #include "white_noise.h"
 #include "saw_wave.h"
+#include "main_screen.h"
 
 #define MAX(a, b) (((a) > (b)) ? (a) : (b))
 
@@ -57,7 +58,12 @@ int main(void) {
 
 	SawFill(main_buffer,actualFrequency,&main_buffer_length);
 
+	InitMainScreen();
+
+	DrawWaveMain(main_buffer, &main_buffer_length,1,0);
+
 	mmStreamOpen(myStream);
+
 
     while(1){
     	scanKeys();
