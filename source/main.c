@@ -18,7 +18,7 @@
 #define MIN(a, b) (((a) < (b)) ? (a) : (b))
 
 int16_t main_buffer[4800]; // main buffer storing the sound (to be copied to the stream buffer)
-int main_buffer_length;    // à passer aux méthodes de remplissage pour quelle disent combien elles ont écrit (en bytes)
+int main_buffer_length;	   // main buffer length (in samples)
 
 int main(void) {
 
@@ -59,8 +59,8 @@ int main(void) {
 			DrawWaveMain(main_buffer, main_buffer_length, 1,0);
 		}
 		if(keys == KEY_A) {
-			printf("A pressed\n");
-			printf("Pause to be implemented\n");
+			PauseResumeSound();
+			printf("Playing: %d\n", IsPlaying());
 			DrawWaveMain(main_buffer, main_buffer_length, 1,0);
 		}
 		swiWaitForVBlank();

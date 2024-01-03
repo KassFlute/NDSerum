@@ -8,11 +8,16 @@
 
 WaveType currentWaveType; 			 // Actual wave type
 int actualFrequency;				 // Actual frequency of the sound
+int isPlaying;						 // Is the sound playing
 
 // Maxmod callback for the audio stream buffer filling
 mm_word OnStreamRequest(mm_word length, mm_addr dest, mm_stream_formats format) {
 	if (length < 4800) return 0;
-	//printf("length is %u", length);
+
+	if (!isPlaying) {
+		memset(dest, 0, 4800*4);
+		return 4800;
+	}
 
 	int16_t *target = dest;
 	int samples_to_copy = main_buffer_length;
@@ -35,6 +40,7 @@ void InitSound() {
 	// Set the sound system parameters
 	actualFrequency = 50;
 	currentWaveType = SAW_WAVE;
+	isPlaying = 1;
 
 	// Initialize the nds sound system
 	mm_ds_system sys;
@@ -94,6 +100,35 @@ void FillBuffer() {
 	}
 }
 
+void PauseSound() {
+	/*
+	 * Pause the sound
+	 */
+	isPlaying = 0;
+}
+
+void ResumeSound() {
+	/*
+	 * Resume the sound
+	 */
+	isPlaying = 1;
+}
+
+void PauseResumeSound() {
+	/*
+	 * Pause or resume the sound depending on the current state
+	 */
+	isPlaying = !isPlaying;
+}
+
+int IsPlaying() {
+	/*
+	 * Return if the sound is playing
+	 * @return 1 if the sound is playing, 0 otherwise
+	 */
+	return isPlaying;
+}
+
 void SetFrequency(int newFrequency) {
 	/*
 	 * Set the frequency of the wave
@@ -140,6 +175,7 @@ void IncrementWaveType(){
 	 * Increment the type of the wave
 	 */
 	currentWaveType = (currentWaveType + 1) % waveTypeCount;
+	FillBuffer();
 }
 
 WaveType GetWaveType(){

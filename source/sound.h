@@ -30,6 +30,11 @@ int NPeriodFromFrequency(int frequency);
 
 void FillBuffer();
 
+void PauseSound();
+void ResumeSound();
+void PauseResumeSound();
+int IsPlaying();
+
 void SetFrequency(int newFrequency);
 void IncrementFrequency10();
 void DecrementFrequency10();
