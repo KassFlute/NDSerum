@@ -6,3 +6,4 @@ ndserum.arm9
 .cproject
 .DS_Store
 .settings/org.eclipse.cdt.core.prefs
+.vscode/settings.json
