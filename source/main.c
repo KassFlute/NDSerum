@@ -60,7 +60,7 @@ int main(void) {
 
 	InitMainScreen();
 
-	DrawWaveMain(main_buffer, &main_buffer_length,1,0);
+	DrawWaveMain(main_buffer, main_buffer_length,1,0);
 
 	mmStreamOpen(myStream);
 
@@ -69,13 +69,15 @@ int main(void) {
     	scanKeys();
 		unsigned keys = keysDown();
 		if(keys == KEY_UP){
-			actualFrequency += 1000;
+			actualFrequency += 10;
 			printf("Frequency: %d\n",actualFrequency);
 			SawFill(main_buffer,actualFrequency,&main_buffer_length); // Quentin à appeller dans saw_wave.c
+			DrawWaveMain(main_buffer, main_buffer_length,1,0);
 		}if(keys == KEY_DOWN){
-			actualFrequency -= 1000;
+			actualFrequency -= 10;
 			printf("Frequency: %d\n",actualFrequency);
 			SawFill(main_buffer,actualFrequency,&main_buffer_length); // Quentin à appeller dans saw_wave.c
+			DrawWaveMain(main_buffer, main_buffer_length,1,0);
 		}
 		swiWaitForVBlank();
     }

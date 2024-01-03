@@ -6,4 +6,4 @@ void InitMainScreen();
 
 
 
-void DrawWaveMain(int16_t * main_buffer, int * length, int offset , int zoom);
+void DrawWaveMain(int16_t * main_buffer, int length, int offset , int zoom);
