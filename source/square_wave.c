@@ -18,6 +18,9 @@ void SquareFill(int16_t* array, int actualFrequency, int* length ){
 	int top = 0;
 
 	for(int i = 0 ; i< sampleNumber ; i++){
+
+		 top = (int)(i / (samplesPerPeriod /  2)) % 2;
+
 		if(top){
 			array[i] = MAXVALUE;
 			counter++;
@@ -25,13 +28,6 @@ void SquareFill(int16_t* array, int actualFrequency, int* length ){
 			array[i] = MINVALUE;
 			counter++;
 		}
-		if(counter > (samplesPerPeriod / (double) 2)){
-			counter = 0;
-			top = (top + 1) % 2;
-		}
-
-		//printf("%d\n",array[i]);
-
 	}
 
 
