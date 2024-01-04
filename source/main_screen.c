@@ -6,6 +6,9 @@
 
 #define VERTICALRANGE 191
 
+int actualZoom = 1;
+int actualOffset = 0;
+
 
 void InitMainScreen(){
 
@@ -35,8 +38,41 @@ void InitMainScreen(){
 	REG_BG2PD = 256;
 }
 
+void ZoomIn(){
+	actualZoom *= 2;
+}
 
-void DrawWaveMain(int16_t * main_buffer, int length, int offset , int zoom){
+void ZoomOut(){
+
+	if(actualZoom > 1){
+		actualZoom /= 2;
+		if((actualOffset) >=(256 * (actualZoom-1))){
+			actualOffset = actualZoom * 256 - 256;
+		}
+
+	}
+
+}
+void MoveRight(){
+
+	if((actualOffset + 256 ) < (256 * actualZoom)){
+		actualOffset += 10;
+		if(actualOffset + 256 > (256 * actualZoom)){
+			actualOffset = (256 * actualZoom)-256;
+		}
+	}
+}
+
+void MoveLeft(){
+
+	if(actualOffset > 0){
+		actualOffset -= 10;
+	}
+
+}
+
+
+void DrawWaveMain(int16_t * main_buffer, int length){
 
 	u16 yellow = ARGB16(1,31,31,0);
 
@@ -55,60 +91,70 @@ void DrawWaveMain(int16_t * main_buffer, int length, int offset , int zoom){
 	case SAW_WAVE:
 		for(int i = 0; i< length  ; i++){
 
-			int x = (i / (double) 4800) * 256 ;
+			int x = (i / (double) 4800) * 256 * actualZoom ;
 
 			int y = ((main_buffer[i] + MAXVALUE) / ((double)2*MAXVALUE)) * VERTICALRANGE;
 
 			int yNext = ((main_buffer[i+1] + MAXVALUE) / ((double)2*MAXVALUE)) * VERTICALRANGE;
 
-			if(y - yNext > 0){
+			if( actualOffset < x && x < 256 + actualOffset){
 
-				for(int i = 0 ; i<=VERTICALRANGE; i++){
-					BG_BMP_RAM(3)[x + 256 * (VERTICALRANGE-i)] = yellow;
+				if(y - yNext > 0){
+
+					for(int i = 0 ; i<=VERTICALRANGE; i++){
+						BG_BMP_RAM(3)[x - actualOffset + 256 * (VERTICALRANGE-i)] = yellow;
+					}
 				}
+				BG_BMP_RAM(3)[x - actualOffset + 256 * (VERTICALRANGE-y)] = yellow;
 			}
-			BG_BMP_RAM(3)[x + 256 * (VERTICALRANGE-y)] = yellow;
 		}
 		break;
 
 	case SIN_WAVE:
 		for(int i = 0; i< length  ; i++){
 
-			int x = (i / (double) 4800) * 256 ;
+			int x = (i / (double) 4800) * 256 * actualZoom;
 
 			int y = ((main_buffer[i] + MAXVALUE) / ((double)2*MAXVALUE)) * VERTICALRANGE;
 
-			BG_BMP_RAM(3)[x + 256 * (VERTICALRANGE-y)] = yellow;
+			if( actualOffset < x && x < 256 + actualOffset){
+				BG_BMP_RAM(3)[x - actualOffset + 256 * (VERTICALRANGE-y)] = yellow;
+			}
 		}
 		break;
 
 	case WHITE_NOISE:
 		for(int i = 0; i< length  ; i++){
 
-			int x = (i / (double) 4800) * 256 ;
+			int x = (i / (double) 4800) * 256 * actualZoom;
 
 			int y = ((main_buffer[i] + MAXVALUE) / ((double)2*MAXVALUE)) * VERTICALRANGE;
 
-			BG_BMP_RAM(3)[x + 256 * (VERTICALRANGE-y)] = yellow;
+			if( actualOffset < x && x < 256 + actualOffset){
+				BG_BMP_RAM(3)[x- actualOffset+ 256 * (VERTICALRANGE-y)] = yellow;
+			}
 		}
 		break;
 	case SQUARE_WAVE:
 		for(int i = 0; i< length  ; i++){
 
-			int x = (i / (double) 4800) * 256 ;
+			int x = (i / (double) 4800) * 256 * actualZoom ;
 
 			int y = ((main_buffer[i] + MAXVALUE) / ((double)2*MAXVALUE)) * VERTICALRANGE;
 
 			int yNext = ((main_buffer[i+1] + MAXVALUE) / ((double)2*MAXVALUE)) * VERTICALRANGE;
 
-			if(y - yNext > 0 || yNext - y > 0 ){
+			if( actualOffset < x && x < 256 + actualOffset){
 
-							for(int i = 0 ; i<= VERTICALRANGE; i++){
-								BG_BMP_RAM(3)[x + 256 * (VERTICALRANGE-i)] = yellow;
+				if(y - yNext > 0 || yNext - y > 0 ){
+
+								for(int i = 0 ; i<= VERTICALRANGE; i++){
+									BG_BMP_RAM(3)[x - actualOffset + 256 * (VERTICALRANGE-i)] = yellow;
+								}
 							}
-						}
 
-			BG_BMP_RAM(3)[x + 256 * (VERTICALRANGE-y)] = yellow;
+				BG_BMP_RAM(3)[x - actualOffset+ 256 * (VERTICALRANGE-y)] = yellow;
+			}
 		}
 		break;
 

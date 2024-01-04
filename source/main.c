@@ -38,30 +38,47 @@ int main(void) {
 	REG_KEYCNT = (1<<14) | KEY_UP | KEY_DOWN | KEY_START | KEY_A;
 
 	InitMainScreen();
-	DrawWaveMain(main_buffer, main_buffer_length,1,0);
+	DrawWaveMain(main_buffer, main_buffer_length);
 
     while(1){
     	scanKeys();
 		unsigned keys = keysDown();
-		if(keys == KEY_UP) {
+		if(keys == KEY_X) {
 			IncrementFrequency10();
 			printf("Frequency: %d\n", GetFrequency());
-			DrawWaveMain(main_buffer, main_buffer_length,1,0);
+			DrawWaveMain(main_buffer, main_buffer_length);
 		}
-		if(keys == KEY_DOWN) {
+		if(keys == KEY_B) {
 			DecrementFrequency10();
 			printf("Frequency: %d\n", GetFrequency());
-			DrawWaveMain(main_buffer, main_buffer_length, 1,0);
+			DrawWaveMain(main_buffer, main_buffer_length);
 		}
 		if(keys == KEY_START) {
 			IncrementWaveType();
 			printf("Wave type: %d\n", GetWaveType());
-			DrawWaveMain(main_buffer, main_buffer_length, 1,0);
+			DrawWaveMain(main_buffer, main_buffer_length);
 		}
 		if(keys == KEY_A) {
 			PauseResumeSound();
 			printf("Playing: %d\n", IsPlaying());
 		}
+		if(keys == KEY_RIGHT) {
+			MoveRight();
+			DrawWaveMain(main_buffer, main_buffer_length);
+		}
+		if(keys == KEY_LEFT) {
+			MoveLeft();
+			DrawWaveMain(main_buffer, main_buffer_length);
+		}
+		if(keys == KEY_UP) {
+			ZoomIn();
+			DrawWaveMain(main_buffer, main_buffer_length);
+		}
+		if(keys == KEY_DOWN) {
+			ZoomOut();
+			DrawWaveMain(main_buffer, main_buffer_length);
+		}
+
 		swiWaitForVBlank();
     }
 }
