@@ -4,7 +4,8 @@
 #include <stdio.h>
 #include "sound.h"
 
-#define VERTICALRANGE 191
+#define VERTICALRANGE 171
+#define GENERALOFFSET 10
 
 int actualZoom = 1;
 int actualOffset = 0;
@@ -102,10 +103,10 @@ void DrawWaveMain(int16_t * main_buffer, int length){
 				if(y - yNext > 0){
 
 					for(int i = 0 ; i<=VERTICALRANGE; i++){
-						BG_BMP_RAM(3)[x - actualOffset + 256 * (VERTICALRANGE-i)] = yellow;
+						BG_BMP_RAM(3)[x - actualOffset + 256 * (VERTICALRANGE-i + GENERALOFFSET)] = yellow;
 					}
 				}
-				BG_BMP_RAM(3)[x - actualOffset + 256 * (VERTICALRANGE-y)] = yellow;
+				BG_BMP_RAM(3)[x - actualOffset + 256 * (VERTICALRANGE-y + GENERALOFFSET)] = yellow;
 			}
 		}
 		break;
@@ -118,7 +119,7 @@ void DrawWaveMain(int16_t * main_buffer, int length){
 			int y = ((main_buffer[i] + MAXVALUE) / ((double)2*MAXVALUE)) * VERTICALRANGE;
 
 			if( actualOffset < x && x < 256 + actualOffset){
-				BG_BMP_RAM(3)[x - actualOffset + 256 * (VERTICALRANGE-y)] = yellow;
+				BG_BMP_RAM(3)[x - actualOffset + 256 * (VERTICALRANGE-y + GENERALOFFSET)] = yellow;
 			}
 		}
 		break;
@@ -131,7 +132,7 @@ void DrawWaveMain(int16_t * main_buffer, int length){
 			int y = ((main_buffer[i] + MAXVALUE) / ((double)2*MAXVALUE)) * VERTICALRANGE;
 
 			if( actualOffset < x && x < 256 + actualOffset){
-				BG_BMP_RAM(3)[x- actualOffset+ 256 * (VERTICALRANGE-y)] = yellow;
+				BG_BMP_RAM(3)[x- actualOffset+ 256 * (VERTICALRANGE-y + GENERALOFFSET)] = yellow;
 			}
 		}
 		break;
@@ -149,11 +150,11 @@ void DrawWaveMain(int16_t * main_buffer, int length){
 				if(y - yNext > 0 || yNext - y > 0 ){
 
 								for(int i = 0 ; i<= VERTICALRANGE; i++){
-									BG_BMP_RAM(3)[x - actualOffset + 256 * (VERTICALRANGE-i)] = yellow;
+									BG_BMP_RAM(3)[x - actualOffset + 256 * (VERTICALRANGE-i + GENERALOFFSET)] = yellow;
 								}
 							}
 
-				BG_BMP_RAM(3)[x - actualOffset+ 256 * (VERTICALRANGE-y)] = yellow;
+				BG_BMP_RAM(3)[x - actualOffset+ 256 * (VERTICALRANGE-y + GENERALOFFSET)] = yellow;
 			}
 		}
 		break;

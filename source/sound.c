@@ -38,7 +38,7 @@ void InitSound() {
 	 */
 
 	// Set the sound system parameters
-	actualFrequency = 50;
+	actualFrequency = 440;
 	currentWaveType = SAW_WAVE;
 	isPlaying = 1;
 
