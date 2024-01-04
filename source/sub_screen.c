@@ -2,6 +2,18 @@
 
 //Tile #0 (transparent tile)
 u8 tile0[64] = {
+   0,0,0,0,0,0,0,0,
+   0,0,0,0,0,0,0,0,
+   0,0,0,0,0,0,0,0,
+   0,0,0,0,0,0,0,0,
+   0,0,0,0,0,0,0,0,
+   0,0,0,0,0,0,0,0,
+   0,0,0,0,0,0,0,0,
+   0,0,0,0,0,0,0,0
+};
+
+//Tile #1 (black tile)
+u8 tile1[64] = {
     200, 200, 200, 200, 200, 200, 200, 200,
 	200, 200, 200, 200, 200, 200, 200, 200,
 	200, 200, 200, 200, 200, 200, 200, 200,
@@ -10,18 +22,6 @@ u8 tile0[64] = {
 	200, 200, 200, 200, 200, 200, 200, 200,
 	200, 200, 200, 200, 200, 200, 200, 200,
 	200, 200, 200, 200, 200, 200, 200, 200
-};
-
-//Tile #1 (black tile)
-u8 tile1[64] = {
-    201, 201, 201, 201, 201, 201, 201, 201,
-	201, 201, 201, 201, 201, 201, 201, 201,
-	201, 201, 201, 201, 201, 201, 201, 201,
-	201, 201, 201, 201, 201, 201, 201, 201,
-	201, 201, 201, 201, 201, 201, 201, 201,
-	201, 201, 201, 201, 201, 201, 201, 201,
-	201, 201, 201, 201, 201, 201, 201, 201,
-	201, 201, 201, 201, 201, 201, 201, 201
 };
 
 void InitSubScreen(){
@@ -46,21 +46,18 @@ void InitSubScreen(){
     swiCopy(BGSubBitmap, BG_BMP_RAM_SUB(2), BGSubBitmapLen / 2);
 
     //custom colors for tiles
-    BG_PALETTE_SUB[200] = ARGB16(0,0,0,0);
-    BG_PALETTE_SUB[201] = ARGB16(1,31,0,0);
-
-
+    BG_PALETTE_SUB[200] = RGB15(0,0,0);
 
     // Copy tiles for the buttons
 
     //POURQUOI CETE LIGNE CASSE TOUT !!!!!!!!!!!! JE VAIS CASSER UN TRUC
-    dmaCopy(tile0, &BG_TILE_RAM_SUB(1)[0], 64);
-    dmaCopy(tile1, &BG_TILE_RAM_SUB(1)[32], 64);
+    dmaCopy(tile0, &BG_TILE_RAM_SUB(0)[0], 64);
+    dmaCopy(tile1, &BG_TILE_RAM_SUB(0)[32], 64);
 
     // Generate the map
     for(int i=0; i<32; i+=2) {
         for(int j=0; j<32; j+=2) {
-            BG_MAP_RAM_SUB(0)[32*i + j] = 0;
+           BG_MAP_RAM_SUB(1)[32*i + j] = 1;
         }
     }
 }
