@@ -12,7 +12,7 @@
 #include "main_screen.h"
 
 // Uncomment the following line to enable debug mode
-#define DEBUG
+//#define DEBUG
 
 #define MAX(a, b) (((a) > (b)) ? (a) : (b))
 #define MIN(a, b) (((a) < (b)) ? (a) : (b))
@@ -20,7 +20,12 @@
 int16_t main_buffer[4800]; // main buffer storing the sound (to be copied to the stream buffer)
 int main_buffer_length;	   // main buffer length (in samples)
 
+int sub_screen_mode = 0; // 0 = controls, 1 = drawing
+
 int main(void) {
+
+	InitMainScreen();
+	InitSubScreen();
 
 	#ifdef DEBUG
 		consoleDemoInit();
@@ -37,7 +42,6 @@ int main(void) {
 
 	REG_KEYCNT = (1<<14) | KEY_UP | KEY_DOWN | KEY_START | KEY_A;
 
-	InitMainScreen();
 	DrawWaveMain(main_buffer, main_buffer_length);
 
     while(1){
@@ -48,6 +52,10 @@ int main(void) {
 			printf("Frequency: %d\n", GetFrequency());
 			DrawWaveMain(main_buffer, main_buffer_length);
 		}
+		if (keys == KEY_A) {
+			PauseResumeSound();
+			printf("Playing: %d\n", IsPlaying());
+		}
 		if(keys == KEY_B) {
 			DecrementFrequency10();
 			printf("Frequency: %d\n", GetFrequency());
@@ -57,10 +65,6 @@ int main(void) {
 			IncrementWaveType();
 			printf("Wave type: %d\n", GetWaveType());
 			DrawWaveMain(main_buffer, main_buffer_length);
-		}
-		if(keys == KEY_A) {
-			PauseResumeSound();
-			printf("Playing: %d\n", IsPlaying());
 		}
 		if(keys == KEY_RIGHT) {
 			MoveRight();
