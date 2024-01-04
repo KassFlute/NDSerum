@@ -72,6 +72,14 @@ void DrawWaveMain(int16_t * main_buffer, int length, int offset , int zoom){
 		break;
 
 	case SIN_WAVE:
+		for(int i = 0; i< length  ; i++){
+
+			int x = (i / (double) 4800) * 256 ;
+
+			int y = ((main_buffer[i] + MAXVALUE) / ((double)2*MAXVALUE)) * VERTICALRANGE;
+
+			BG_BMP_RAM(3)[x + 256 * (VERTICALRANGE-y)] = yellow;
+		}
 		break;
 
 	case WHITE_NOISE:
