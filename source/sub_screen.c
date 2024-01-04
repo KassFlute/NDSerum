@@ -33,7 +33,7 @@ void InitSubScreen(){
     BGCTRL_SUB[2] = BG_BMP_BASE(2) | BgSize_B8_256x256;
 
     // BG0, Tile
-    BGCTRL_SUB[0] = BG_32x32 | BG_COLOR_256 | BG_MAP_BASE(0) | BG_TILE_BASE(1);
+    BGCTRL_SUB[0] = BG_32x32 | BG_COLOR_256 | BG_MAP_BASE(1) | BG_TILE_BASE(0);
 
     // Affine Marix Transformation
     REG_BG2PA_SUB = 256;
@@ -43,22 +43,18 @@ void InitSubScreen(){
 
     // Copy tiles and palette for the background
     swiCopy(BGSubPal, BG_PALETTE_SUB, BGSubPalLen / 2);
-
-    //printf("BGSubPalLen: %d\n", BGSubPalLen);
-
     swiCopy(BGSubBitmap, BG_BMP_RAM_SUB(2), BGSubBitmapLen / 2);
 
     //custom colors for tiles
-    //BG_PALETTE_SUB[200] = ARGB16(0,0,0,0);
-   // BG_PALETTE_SUB[201] = ARGB16(1,31,0,0);
+    BG_PALETTE_SUB[200] = ARGB16(0,0,0,0);
+    BG_PALETTE_SUB[201] = ARGB16(1,31,0,0);
 
 
 
     // Copy tiles for the buttons
 
     //POURQUOI CETE LIGNE CASSE TOUT !!!!!!!!!!!! JE VAIS CASSER UN TRUC
-    //dmaCopy(tile0, &BG_TILE_RAM_SUB(1)[0], 64);
-
+    dmaCopy(tile0, &BG_TILE_RAM_SUB(1)[0], 64);
     dmaCopy(tile1, &BG_TILE_RAM_SUB(1)[32], 64);
 
     // Generate the map
