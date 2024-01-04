@@ -96,6 +96,9 @@ void FillBuffer() {
 	case WHITE_NOISE:
 		WhiteNoiseFill(main_buffer, actualFrequency, &main_buffer_length);
 		break;
+	case SQUARE_WAVE:
+		SquareFill(main_buffer, actualFrequency, &main_buffer_length);
+		break;
 		// Add other cases for different wave types
 	}
 }

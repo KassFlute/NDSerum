@@ -12,7 +12,7 @@ void WhiteNoiseFill(int16_t* array, int frequency, int* length){
 	int nPeriod = NPeriodFromFrequency(frequency);
 	int sampleNumber = SAMPLERATE / (double) frequency * (nPeriod);
 	*length = sampleNumber;
-	printf("sampleNumber : %d\n", sampleNumber);
+
 	for(int i = 0 ; i < sampleNumber ; i++){
 			array[i] = (short) rand();
 		}

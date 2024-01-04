@@ -4,6 +4,9 @@
 #include <stdio.h>
 #include "sound.h"
 
+#define VERTICALRANGE 191
+
+
 void InitMainScreen(){
 
 	REG_DISPCNT = MODE_5_2D | DISPLAY_BG2_ACTIVE | DISPLAY_BG3_ACTIVE;
@@ -45,25 +48,63 @@ void DrawWaveMain(int16_t * main_buffer, int length, int offset , int zoom){
 		}
 	}
 
-	for(int i = 0; i< length  ; i++){
+	WaveType currentWaveType = GetWaveType();
 
-		int x = (i / (double) 4800) * 256 ;
+	switch(currentWaveType){
 
-		int y = ((main_buffer[i] + MAXVALUE) / ((double)2*MAXVALUE)) * 192;
+	case SAW_WAVE:
+		for(int i = 0; i< length  ; i++){
 
-		int yNext = ((main_buffer[i+1] + MAXVALUE) / ((double)2*MAXVALUE)) * 192;
+			int x = (i / (double) 4800) * 256 ;
 
-		if(y - yNext > 0){
+			int y = ((main_buffer[i] + MAXVALUE) / ((double)2*MAXVALUE)) * VERTICALRANGE;
 
-			for(int i = 0 ; i<256; i++){
-				BG_BMP_RAM(3)[x + 256 * (192-i)] = yellow;
+			int yNext = ((main_buffer[i+1] + MAXVALUE) / ((double)2*MAXVALUE)) * VERTICALRANGE;
+
+			if(y - yNext > 0){
+
+				for(int i = 0 ; i<192; i++){
+					BG_BMP_RAM(3)[x + 256 * (VERTICALRANGE-i)] = yellow;
+				}
 			}
+			BG_BMP_RAM(3)[x + 256 * (VERTICALRANGE-y)] = yellow;
 		}
+		break;
 
-		BG_BMP_RAM(3)[x + 256 * (192-y)] = yellow;
+	case SIN_WAVE:
+		break;
+
+	case WHITE_NOISE:
+		for(int i = 0; i< length  ; i++){
+
+			int x = (i / (double) 4800) * 256 ;
+
+			int y = ((main_buffer[i] + MAXVALUE) / ((double)2*MAXVALUE)) * VERTICALRANGE;
+
+			BG_BMP_RAM(3)[x + 256 * (VERTICALRANGE-y)] = yellow;
+		}
+		break;
+	case SQUARE_WAVE:
+		for(int i = 0; i< length  ; i++){
+
+			int x = (i / (double) 4800) * 256 ;
+
+			int y = ((main_buffer[i] + MAXVALUE) / ((double)2*MAXVALUE)) * VERTICALRANGE;
+
+			int yNext = ((main_buffer[i+1] + MAXVALUE) / ((double)2*MAXVALUE)) * VERTICALRANGE;
+
+			if(y - yNext > 0 || yNext - y > 0 ){
+
+							for(int i = 0 ; i<192; i++){
+								BG_BMP_RAM(3)[x + 256 * (VERTICALRANGE-i)] = yellow;
+							}
+						}
+
+			BG_BMP_RAM(3)[x + 256 * (VERTICALRANGE-y)] = yellow;
+		}
+		break;
 
 	}
-
 }
 
 

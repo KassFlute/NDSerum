@@ -7,11 +7,12 @@
 #include "white_noise.h"
 #include "saw_wave.h"
 #include "sin_wave.h"
+#include "square_wave.h"
 
 #define SAMPLERATE 48000
 #define BUFFERLENGTH 9600 // Length of the stream buffer
 #define MINVALUE -32768 // Audio samples are 16 bits signed integers
-#define MAXVALUE 32768
+#define MAXVALUE 32767
 #define NUMBERPERIOD 20 // WTF is this ?
 #define N_SAMPLES 4800 // Number of samples to be generated at each call of FillBuffer() recalculated each time in the fill functions
 
@@ -19,10 +20,11 @@ typedef enum
 {
     SAW_WAVE,
     SIN_WAVE,
-    WHITE_NOISE
+    WHITE_NOISE,
+	SQUARE_WAVE
     // Other wave types ...
 } WaveType;
-#define waveTypeCount 3; // KEEP UPDATED
+#define waveTypeCount 4; // KEEP UPDATED
 
 mm_word OnStreamRequest(mm_word length, mm_addr dest, mm_stream_formats format);
 
