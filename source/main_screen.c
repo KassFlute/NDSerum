@@ -63,7 +63,7 @@ void DrawWaveMain(int16_t * main_buffer, int length, int offset , int zoom){
 
 			if(y - yNext > 0){
 
-				for(int i = 0 ; i<192; i++){
+				for(int i = 0 ; i<=VERTICALRANGE; i++){
 					BG_BMP_RAM(3)[x + 256 * (VERTICALRANGE-i)] = yellow;
 				}
 			}
@@ -103,7 +103,7 @@ void DrawWaveMain(int16_t * main_buffer, int length, int offset , int zoom){
 
 			if(y - yNext > 0 || yNext - y > 0 ){
 
-							for(int i = 0 ; i<192; i++){
+							for(int i = 0 ; i<= VERTICALRANGE; i++){
 								BG_BMP_RAM(3)[x + 256 * (VERTICALRANGE-i)] = yellow;
 							}
 						}
