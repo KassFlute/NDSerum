@@ -10,7 +10,7 @@ void SinFill(int16_t *array, int frequency, int *length){
      */
     int nPeriod = NPeriodFromFrequency(frequency);
 
-    double samplesPerPeriod = SAMPLERATE/ (double) frequency;
+    double samplesPerPeriod = SAMPLERATE / (double) frequency;
 
     int sampleNumber = samplesPerPeriod * nPeriod;
 

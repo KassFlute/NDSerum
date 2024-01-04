@@ -38,9 +38,9 @@ void InitSound() {
 	 */
 
 	// Set the sound system parameters
-	actualFrequency = 440;
+	actualFrequency = 440; // 5937 does not work
 	currentWaveType = SAW_WAVE;
-	isPlaying = 1;
+	isPlaying = 0;
 
 	// Initialize the nds sound system
 	mm_ds_system sys;

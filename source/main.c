@@ -24,6 +24,11 @@ int sub_screen_mode = 0; // 0 = controls, 1 = drawing
 
 int main(void) {
 
+	InitSound(); // Initialize the sound system
+	#ifdef DEBUG
+		printf("Sound system initialized.\n");
+	#endif
+
 	InitMainScreen();
 	InitSubScreen();
 
@@ -31,12 +36,6 @@ int main(void) {
 		consoleDemoInit();
 		printf("\nNDSerum\n");
 		printf("Debug mode is on.\n");
-	#endif
-
-	InitSound(); // Initialize the sound system
-
-	#ifdef DEBUG
-		printf("Sound system initialized.\n");
 	#endif
 
 
@@ -49,6 +48,7 @@ int main(void) {
 		unsigned keys = keysDown();
 		if(keys == KEY_X) {
 			IncrementFrequency10();
+			SetFreqFader(GetFrequency());
 			printf("Frequency: %d\n", GetFrequency());
 			DrawWaveMain(main_buffer, main_buffer_length);
 		}
@@ -58,6 +58,7 @@ int main(void) {
 		}
 		if(keys == KEY_B) {
 			DecrementFrequency10();
+			SetFreqFader(GetFrequency());
 			printf("Frequency: %d\n", GetFrequency());
 			DrawWaveMain(main_buffer, main_buffer_length);
 		}
@@ -83,6 +84,28 @@ int main(void) {
 			DrawWaveMain(main_buffer, main_buffer_length);
 		}
 
+		// Touch screen
+		keys = keysHeld();
+		if (keys & KEY_TOUCH) {
+			touchPosition touch;
+			touchRead(&touch);
+			if (touch.px || touch.py) {
+				// Frequency fader
+				if (touch.px >= 8 && touch.px < 25) {
+					printf("Touch: %d, %d\n", touch.px, touch.py);
+					int touchY = MIN(MAX(touch.py, 3), 189) - 3; // Calculating as if the screen was 186 pixels wide (instead of 192) because impossible to touch
+					int newFrequency = (((186-touchY) * 980) / 186) + 20;
+					printf("New frequency: %d\n", newFrequency);
+					newFrequency = newFrequency -  (newFrequency % 10); // Round to the nearest 10 because some freq don't work
+					if (newFrequency != GetFrequency()){
+						SetFrequency(newFrequency);
+						printf("Frequency: %d\n", GetFrequency());
+						SetFreqFader(GetFrequency());
+						DrawWaveMain(main_buffer, main_buffer_length);
+					}
+				}
+			}
+		}
 		swiWaitForVBlank();
     }
 }

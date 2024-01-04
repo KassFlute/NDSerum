@@ -1,5 +1,12 @@
+nécessaire:
+tiles de numéro main screen
+axes mieux
+
+Fader volume
+Fader autres trucs rigolo
+
+bonus:
 Le zoom qui affiche par défaut que une période.
 afficher des valeurs numérique en haut.
 l'écran du bas peut aussi servir à dessiner une wave custom.
-
 les ds sur le même reseau wifi produisent la même onde (truc de zozo)
