@@ -102,7 +102,7 @@ int main(void) {
 					int touchY = MIN(MAX(touch.py, 3), 189) - 3; // Calculating as if the screen was 186 pixels wide (instead of 192) because impossible to touch
 					int newFrequency = (((186-touchY) * 980) / 186) + 20;
 					printf("New frequency: %d\n", newFrequency);
-					newFrequency = newFrequency -  (newFrequency % 10); // Round to the nearest 10 because some freq don't work
+					//newFrequency = newFrequency -  (newFrequency % 10); // Round to the nearest 10 because some freq don't work
 					if (newFrequency != GetFrequency()){
 						SetFrequency(newFrequency);
 						SetFreqFader(GetFrequency());
