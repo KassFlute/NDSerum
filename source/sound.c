@@ -9,25 +9,31 @@
 WaveType currentWaveType; 			 // Actual wave type
 int actualFrequency;				 // Actual frequency of the sound
 int isPlaying;						 // Is the sound playing
+int actualArrayIndex;				 // Index of the buffer being written
+
 
 // Maxmod callback for the audio stream buffer filling
 mm_word OnStreamRequest(mm_word length, mm_addr dest, mm_stream_formats format) {
-	if (length < 4800) return 0;
+
+	int amount = (int) length;
 
 	if (!isPlaying) {
-		memset(dest, 0, 4800*4);
-		return 4800;
+		memset(dest, 0, amount*4);
+		return length;
 	}
 
 	int16_t *target = dest;
-	int samples_to_copy = main_buffer_length;
-	for (int i = 0; i < samples_to_copy; i++)
+
+	for (int i = 0; i < amount; i++)
 	{
 		// Deux à la suite parce que stereo earrape sur la nds
-		*target++ = main_buffer[i];
-		*target++ = main_buffer[i];
+		*target++ = main_buffer[actualArrayIndex];
+		*target++ = main_buffer[actualArrayIndex];
+
+		actualArrayIndex = (actualArrayIndex + 1) % main_buffer_length;
+
 	}
-	return samples_to_copy;
+	return length;
 }
 
 void InitSound() {
@@ -38,9 +44,9 @@ void InitSound() {
 	 */
 
 	// Set the sound system parameters
-	actualFrequency = 440; // 5937 does not work
+	actualFrequency = 5937;
 	currentWaveType = SAW_WAVE;
-	isPlaying = 0;
+	isPlaying = 1;
 
 	// Initialize the nds sound system
 	mm_ds_system sys;
@@ -85,6 +91,9 @@ void FillBuffer() {
 	 * @param main_buffer : the buffer to fill
 	 * @param main_buffer_length : pointer to the number of sample the buffer will be filled with
 	 */
+
+	actualArrayIndex = 0;
+
 	switch (currentWaveType)
 	{
 	case SAW_WAVE:

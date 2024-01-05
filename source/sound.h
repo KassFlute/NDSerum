@@ -1,6 +1,6 @@
 #pragma once
 
-#include <nds.h>
+#include  <nds.h>
 #include <maxmod9.h>
 
 #include "globals.h"
@@ -10,7 +10,7 @@
 #include "square_wave.h"
 
 #define SAMPLERATE 48000
-#define BUFFERLENGTH 9600 // Length of the stream buffer
+#define BUFFERLENGTH 9600//9600 // Length of the stream buffer
 #define MINVALUE -32768 // Audio samples are 16 bits signed integers
 #define MAXVALUE 32767
 #define NUMBERPERIOD 20 // WTF is this ?
