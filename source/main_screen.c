@@ -132,8 +132,40 @@ u8 tileNum9[64] = {
    0,0,9,9,9,9,0,0
 };
 
+u8 tileDot[64] = {
+   0,0,0,0,0,0,0,0,
+   0,0,0,0,0,0,0,0,
+   0,0,0,0,0,0,0,0,
+   0,0,0,0,0,0,0,0,
+   0,0,0,0,0,0,0,0,
+   0,0,0,0,0,0,0,0,
+   0,0,0,9,9,0,0,0,
+   0,0,0,9,9,0,0,0
+};
 
-void InitMainScreen(){
+u8 tileDegree[64] = {
+   0,0,0,0,0,0,0,0,
+   0,0,9,9,0,0,0,0,
+   0,9,0,0,9,0,0,0,
+   0,9,0,0,9,0,0,0,
+   0,0,9,9,0,0,0,0,
+   0,0,0,0,0,0,0,0,
+   0,0,0,0,0,0,0,0,
+   0,0,0,0,0,0,0,0
+};
+
+u8 tileHz[64] = {
+   0,0,0,0,0,0,0,0,
+   0,0,0,0,0,0,0,0,
+   0,0,0,0,0,0,0,0,
+   9,0,0,9,0,0,0,0,
+   9,0,0,9,0,9,9,9,
+   9,9,9,9,0,0,0,9,
+   9,0,0,9,0,0,9,0,
+   9,0,0,9,0,9,9,9
+};
+
+void InitMainScreen() {
 
 	REG_DISPCNT = MODE_5_2D | DISPLAY_BG2_ACTIVE | DISPLAY_BG3_ACTIVE | DISPLAY_BG0_ACTIVE;
 
@@ -176,41 +208,70 @@ void InitMainScreen(){
 	dmaCopy(tileNum8, &BG_TILE_RAM(4)[256], 64);
 	dmaCopy(tileNum9, &BG_TILE_RAM(4)[288], 64);
 	dmaCopy(tileNum10, &BG_TILE_RAM(4)[320], 64);
+	dmaCopy(tileDot, &BG_TILE_RAM(4)[352], 64); // 11
+	dmaCopy(tileDegree, &BG_TILE_RAM(4)[384], 64); // 12
+	dmaCopy(tileHz, &BG_TILE_RAM(4)[416], 64); // 13
 }
 
-void DrawFrequencyMain(){
-
-	int frequency = GetFrequency();
-
+void ClearInfoBG() {
+	/*
+	 * Clear the info background
+	 */
 	for(int x = 0; x<32 ; x++){
 		for(int y = 0; y<32; y++){
-			BG_MAP_RAM(24)[y*32 + x]=  10;
+			BG_MAP_RAM(24)[y*32 + x] = 10;
 		}
 	}
-
-	BG_MAP_RAM(24)[4]=  frequency % 10;
-	BG_MAP_RAM(24)[3]=  (frequency /10) % 10;
-	BG_MAP_RAM(24)[2]=  (frequency / 100) % 10;
-	BG_MAP_RAM(24)[1]=  (frequency / 1000)% 10;
-	BG_MAP_RAM(24)[0]=  (frequency / 10000) % 10;
-
 }
 
+void DrawFrequencyMain() {
+	int frequency = GetFrequency();
 
-void DrawTimeScaleMain(){
+	BG_MAP_RAM(24)[0]=  (frequency / 10000) % 10;
+	BG_MAP_RAM(24)[1]=  (frequency / 1000)% 10;
+	BG_MAP_RAM(24)[2]=  (frequency / 100) % 10;
+	BG_MAP_RAM(24)[3]=  (frequency /10) % 10;
+	BG_MAP_RAM(24)[4]=  frequency % 10;
+	BG_MAP_RAM(24)[5]= 13;
+}
 
+void DrawAmplitudeMain() {
+	/*
+	 * Draw the amplitude on the main screen
+	 */
+	float amplitude = GetAmplitude();
+
+	BG_MAP_RAM(24)[32*2 + 0] = (int)amplitude % 2;
+	BG_MAP_RAM(24)[32*2 + 1] = 11;
+	BG_MAP_RAM(24)[32*2 + 2] = (int)(amplitude * 10) % 10;
+	BG_MAP_RAM(24)[32*2 + 3] = (int)(amplitude * 100) % 10;
+	BG_MAP_RAM(24)[32*2 + 4] = (int)(amplitude * 1000) % 10;
+}
+
+void DrawPhaseMain() {
+	/*
+	 * Draw the phase on the main screen
+	 */
+	int phase = GetPhase();
+
+	BG_MAP_RAM(24)[32*4 + 0] = (phase / 100) % 10;;
+	BG_MAP_RAM(24)[32*4 + 1] = (phase / 10) % 10;
+	BG_MAP_RAM(24)[32*4 + 2] = phase % 10;
+	BG_MAP_RAM(24)[32*4 + 3] = 12; // degree symbol
+}
+
+void DrawTimeScaleMain() {
 	BG_MAP_RAM(24)[32 * 13]= 0;
 	BG_MAP_RAM(24)[32 * 13 + 8]= 0;
 	BG_MAP_RAM(24)[32 * 13 + 16]= 0;
 	BG_MAP_RAM(24)[32 * 13 + 24]= 0;
-
 }
 
-void ZoomIn(){
+void ZoomIn() {
 	actualZoom *= 2;
 }
 
-void ZoomOut(){
+void ZoomOut() {
 
 	if(actualZoom > 1){
 		actualZoom /= 2;
@@ -221,7 +282,7 @@ void ZoomOut(){
 	}
 
 }
-void MoveRight(){
+void MoveRight() {
 
 	if((actualOffset + 256 ) < (256 * actualZoom)){
 		actualOffset += 10;
@@ -231,7 +292,7 @@ void MoveRight(){
 	}
 }
 
-void MoveLeft(){
+void MoveLeft() {
 
 	if(actualOffset > 0){
 		actualOffset -= 10;
@@ -240,14 +301,23 @@ void MoveLeft(){
 }
 
 
-void DrawWaveMain(int16_t * main_buffer, int length){
+void DrawWaveMain(int16_t * main_buffer, int length) {
+	/*
+	 * Draw the wave and metrics on the main screen
+	 * @param main_buffer : the buffer containing the wave
+	 * @param length : the length of the buffer
+	*/
 
+	// Metrics draw
+	ClearInfoBG();
 	DrawFrequencyMain();
+	DrawAmplitudeMain();
+	DrawPhaseMain();
 	DrawTimeScaleMain();
 
+	//  Wave draw
 
 	u16 yellow = ARGB16(1,31,31,0);
-
 	u16 transparent = ARGB16(0,0,0,0);
 
 	for(int x = 0 ; x < 256 ; x ++){
