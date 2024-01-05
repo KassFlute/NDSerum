@@ -4,6 +4,9 @@ int x_volume_fader = 1;
 int y_volume_fader = 1;
 int fader_range = 23;
 
+int x_amplitude_fader = 4;
+int y_amplitude_fader = 1;
+
 //Tile #0 (transparent tile)
 u8 tile0[64] = {
    0,0,0,0,0,0,0,0,
@@ -28,7 +31,7 @@ u8 tile1[64] = {
 	200, 200, 200, 200, 200, 200, 200, 200
 };
 
-void InitSubScreen(){
+void InitSubScreen() {
     /*
         * Initialize the sub screen
     */
@@ -58,8 +61,8 @@ void InitSubScreen(){
     dmaCopy(tile0, &BG_TILE_RAM_SUB(0)[0], 64);
     dmaCopy(tile1, &BG_TILE_RAM_SUB(0)[32], 64);
 
-    SetFreqFader(GetFrequency());
-    DrawFreqFader();
+    SetFreqFader(GetFrequency());    
+    SetAmplitudeFader(GetAmplitude());
 }
 
 void DrawFreqFader() {
@@ -89,4 +92,34 @@ void SetFreqFader(int freq) {
     */
     y_volume_fader = 23 - (int) ceil((((double)(freq - 20.0)) / (980.0 / ((double)fader_range))));
     DrawFreqFader();
+}
+
+void DrawAmplitudeFader() {
+    /*
+     * Draw the amplitude fader
+     */
+
+    // Erase the previous fader
+    for(int x=x_amplitude_fader; x<x_amplitude_fader+2; x+=1) {
+        for(int y=0; y<32; y+=1) {
+           BG_MAP_RAM_SUB(1)[32*y + x] = 0;
+        }
+    }
+
+    // Draw the new fader
+    for(int x=x_amplitude_fader; x<x_amplitude_fader+2; x+=1) {
+        for(int y=y_amplitude_fader; y<y_amplitude_fader+1; y+=1) {
+           BG_MAP_RAM_SUB(1)[32*y + x] = 1;
+        }
+    }
+}
+
+void SetAmplitudeFader(float amplitude) {
+    /*
+     * Set the position of the amplitude fader
+     * @param amplitude : the new amplitude for the fader
+     */
+    printf("Amplitude: %f\n", amplitude);
+    y_amplitude_fader = 23 - (int) ceil((((double)(amplitude)) / (1.0 / ((double)fader_range))));
+    DrawAmplitudeFader();
 }

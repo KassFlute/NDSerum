@@ -43,6 +43,9 @@ void IncrementFrequency10();
 void DecrementFrequency10();
 int GetFrequency();
 
+void SetAmplitude(float newAmplitude);
+float GetAmplitude();
+
 void SetWaveType(WaveType newWaveType);
 void IncrementWaveType();
 WaveType GetWaveType();

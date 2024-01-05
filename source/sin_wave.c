@@ -1,7 +1,7 @@
 #include "sin_wave.h"
 #include <stdio.h>
 
-void SinFill(int16_t *array, int frequency, int *length){
+void SinFill(int16_t *array, int frequency, float amplitude, int phase, int *length){
     /*
      * Fill the array with a sin wave of the given frequency
      * @param array : the array to fill
@@ -15,9 +15,11 @@ void SinFill(int16_t *array, int frequency, int *length){
     double angleStep = (double) 360 * nPeriod / sampleNumber ;
     double x = 0;
 
+    double range = MAXVALUE * amplitude;
+
     for(int i = 0 ; i < sampleNumber ; i++) {
     	x += angleStep;
-        short sample = (short) (MAXVALUE * sin( M_PI * x / (double)180));
+        short sample = (short) (range * sin( M_PI * x / (double)180));
         array[i] = sample;
     }
     

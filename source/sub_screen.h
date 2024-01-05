@@ -9,5 +9,7 @@
 void InitSubScreen();
 
 void DrawFreqFader();
-
 void SetFreqFader(int freq);
+
+void DrawAmplitudeFader(); // Mystique 2
+void SetAmplitudeFader(float amplitude);

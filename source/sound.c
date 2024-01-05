@@ -8,6 +8,8 @@
 
 WaveType currentWaveType; 			 // Actual wave type
 int actualFrequency;				 // Actual frequency of the sound
+float actualAmplitude;				 // Actual amplitude of the sound
+int actualPhase;					 // Actual phase of the sound
 int isPlaying;						 // Is the sound playing
 int actualArrayIndex;				 // Index of the buffer being written
 
@@ -45,6 +47,8 @@ void InitSound() {
 
 	// Set the sound system parameters
 	actualFrequency = 35;
+	actualAmplitude = 1;
+	actualPhase = 0;
 	currentWaveType = SAW_WAVE;
 	isPlaying = 1;
 
@@ -77,7 +81,7 @@ int NPeriodFromFrequency(int frequency) {
 	 * @param frequency : the frequency of the wave
 	 * @return the number of period of the wave to fill
 	 */
-	int nPeriod = frequency / 1000;
+	int nPeriod = frequency / 10;
 	// Clamp the number between 1 and 10000
 	return MAX(MIN(nPeriod, 10000), 1);
 }
@@ -97,16 +101,16 @@ void FillBuffer() {
 	switch (currentWaveType)
 	{
 	case SAW_WAVE:
-		SawFill(main_buffer, actualFrequency, &main_buffer_length);
+		SawFill(main_buffer, actualFrequency, actualAmplitude, actualPhase, &main_buffer_length);
 		break;
 	case SIN_WAVE:
-		SinFill(main_buffer, actualFrequency, &main_buffer_length);
+		SinFill(main_buffer, actualFrequency, actualAmplitude, actualPhase, &main_buffer_length);
 		break;
 	case WHITE_NOISE:
-		WhiteNoiseFill(main_buffer, actualFrequency, &main_buffer_length);
+		WhiteNoiseFill(main_buffer, actualFrequency, actualAmplitude, actualPhase, &main_buffer_length);
 		break;
 	case SQUARE_WAVE:
-		SquareFill(main_buffer, actualFrequency, &main_buffer_length);
+		SquareFill(main_buffer, actualFrequency, actualAmplitude, actualPhase, &main_buffer_length);
 		break;
 		// Add other cases for different wave types
 	}
@@ -171,6 +175,23 @@ int GetFrequency() {
 	 * @return the frequency of the wave
 	 */
 	return actualFrequency;
+}
+
+void SetAmplitude(float newAmplitude) {
+	/*
+	 * Set the amplitude of the wave
+	 * @param newAmplitude : the new amplitude of the wave
+	 */
+	actualAmplitude = MAX(MIN(newAmplitude, 1), 0);
+	FillBuffer();
+}
+
+float GetAmplitude() {
+	/*
+	 * Return the amplitude of the wave
+	 * @return the amplitude of the wave
+	 */
+	return actualAmplitude;
 }
 
 void SetWaveType(WaveType newWaveType){

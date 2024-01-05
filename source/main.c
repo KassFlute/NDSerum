@@ -10,6 +10,7 @@
 #include "globals.h"
 #include "sound.h"
 #include "main_screen.h"
+#include "sub_screen.h" // Mystique 1
 
 // Uncomment the following line to enable debug mode
 //#define DEBUG
@@ -21,6 +22,10 @@ int16_t main_buffer[4800]; // main buffer storing the sound (to be copied to the
 int main_buffer_length;	   // main buffer length (in samples)
 
 int sub_screen_mode = 0; // 0 = controls, 1 = drawing
+
+int fader_width = 16; // Width of the faders in pixels
+int freq_fader_start = 8; // Start of the volume fader in pixels
+int ampp_fader_start = 32; // Start of the amplitude fader in pixels
 
 int main(void) {
 
@@ -91,7 +96,7 @@ int main(void) {
 			touchRead(&touch);
 			if (touch.px || touch.py) {
 				// Frequency fader
-				if (touch.px >= 8 && touch.px < 25) {
+				if (touch.px >= freq_fader_start && touch.px <= freq_fader_start + fader_width) {
 					printf("Touch: %d, %d\n", touch.px, touch.py);
 					int touchY = MIN(MAX(touch.py, 3), 189) - 3; // Calculating as if the screen was 186 pixels wide (instead of 192) because impossible to touch
 					int newFrequency = (((186-touchY) * 980) / 186) + 20;
@@ -101,6 +106,16 @@ int main(void) {
 						SetFrequency(newFrequency);
 						printf("Frequency: %d\n", GetFrequency());
 						SetFreqFader(GetFrequency());
+						DrawWaveMain(main_buffer, main_buffer_length);
+					}
+				}
+
+				if (touch.px >= ampp_fader_start && touch.px <= ampp_fader_start + fader_width) {
+					int touchY = MIN(MAX(touch.py, 3), 189) - 3; // Calculating as if the screen was 186 pixels wide (instead of 192) because impossible to touch
+					float newAmplitude = ((float)(186-touchY)) / 186;
+					if (newAmplitude != GetAmplitude()){
+						SetAmplitude(newAmplitude);
+						SetAmplitudeFader(GetAmplitude());
 						DrawWaveMain(main_buffer, main_buffer_length);
 					}
 				}

@@ -2,7 +2,7 @@
 
 #include <stdio.h>
 
-void WhiteNoiseFill(int16_t* array, int frequency, int* length){
+void WhiteNoiseFill(int16_t* array, int frequency, float amplitude, int phase, int* length){
 	/*
 	 * Fill the array with a white noise of the given frequency
 	 * @param array : the array to fill
@@ -19,6 +19,7 @@ void WhiteNoiseFill(int16_t* array, int frequency, int* length){
 	*length = sampleNumber;
 
 	for(int i = 0 ; i < sampleNumber; i++){
-			array[i] = (short) rand();
+			short randomShort = rand() % MAXVALUE*2 - MAXVALUE; // Generate a random short
+			array[i] = (short) (amplitude * randomShort); // Add the random short to the array
 		}
 }
