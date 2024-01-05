@@ -14,12 +14,17 @@ void SquareFill(int16_t* array, int actualFrequency, float amplitude, int phase,
 	int top = 0;
 	short range = (short) (MAXVALUE * amplitude);
 
+	// Calculate the phase offset in samples
+	int phaseOffset = (int)(phase / 360.0 * samplesPerPeriod) % (int)samplesPerPeriod;
+
 	for(int i = 0 ; i< sampleNumber ; i++) {
-		top = (int)(i / (samplesPerPeriod /  2)) % 2;
+		int adjustedIndex = (i - phaseOffset) % (int)samplesPerPeriod;
+		int top = (int)(adjustedIndex / (samplesPerPeriod / 2)) % 2;
+
 		if(top){
 			array[i] = range;
 			counter++;
-		}if(!top){
+		} else {
 			array[i] = -range;
 			counter++;
 		}
