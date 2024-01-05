@@ -1,9 +1,14 @@
 nécessaire:
 tiles de numéro main screen : OK
-axes mieux 
+axes mieux
+plus de metrics main screen : OK
+unitées metrics : OK
 
-Fader volume
-Fader autres trucs rigolo
+Fader volume : OK
+Fader autres trucs rigolo : OK
+background sub : OK
+
+moins lager : PLUS OU MOINS
 
 Mettre un timer quelque part
 
