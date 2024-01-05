@@ -10,17 +10,120 @@
 int actualZoom = 1;
 int actualOffset = 0;
 
+u8 tileNum0[64] = {
+   0,0,2,2,2,2,0,0,
+   0,2,0,0,0,0,2,0,
+   0,2,0,0,0,0,2,0,
+   0,2,0,0,0,0,2,0,
+   0,2,0,0,0,0,2,0,
+   0,2,0,0,0,0,2,0,
+   0,2,0,0,0,0,2,0,
+   0,0,2,2,2,2,0,0
+};
+u8 tileNum1[64] = {
+   0,0,2,2,2,0,0,0,
+   0,0,0,2,2,0,0,0,
+   0,0,0,2,2,0,0,0,
+   0,0,0,2,2,0,0,0,
+   0,0,0,2,2,0,0,0,
+   0,0,0,2,2,0,0,0,
+   0,0,0,2,2,0,0,0,
+   0,0,2,2,2,2,0,0
+};
+u8 tileNum2[64] = {
+   0,0,2,2,2,2,0,0,
+   0,2,0,0,0,0,2,0,
+   0,0,0,0,0,2,0,0,
+   0,0,0,0,2,0,0,0,
+   0,0,0,2,0,0,0,0,
+   0,0,2,0,0,0,0,0,
+   0,2,0,0,0,0,0,0,
+   0,2,2,2,2,2,2,0
+};
+u8 tileNum3[64] = {
+   0,0,0,0,0,0,0,0,
+   0,0,2,2,2,2,0,0,
+   0,0,0,0,0,0,2,0,
+   0,0,0,0,0,0,2,0,
+   0,0,2,2,2,2,0,0,
+   0,0,0,0,0,0,2,0,
+   0,0,0,0,0,0,2,0,
+   0,0,2,2,2,2,0,0
+};
+u8 tileNum4[64] = {
+   0,0,0,0,0,2,0,0,
+   0,0,0,0,2,2,0,0,
+   0,0,0,2,0,2,0,0,
+   0,0,2,0,0,2,0,0,
+   0,2,2,2,2,2,2,0,
+   0,0,0,0,0,2,0,0,
+   0,0,0,0,0,2,0,0,
+   0,0,0,0,0,2,0,0
+};
+u8 tileNum5[64] = {
+   0,2,2,2,2,2,2,0,
+   0,2,0,0,0,0,0,0,
+   0,2,0,0,0,0,0,0,
+   0,2,2,2,2,2,0,0,
+   0,0,0,0,0,0,2,0,
+   0,0,0,0,0,0,2,0,
+   0,0,0,0,0,0,2,0,
+   0,2,2,2,2,2,0,0
+};
+u8 tileNum6[64] = {
+   0,0,2,2,2,2,0,0,
+   0,2,0,0,0,0,2,0,
+   0,2,0,0,0,0,0,0,
+   0,2,2,2,2,2,0,0,
+   0,2,0,0,0,0,2,0,
+   0,2,0,0,0,0,2,0,
+   0,2,0,0,0,0,2,0,
+   0,0,2,2,2,2,0,0
+};
+
+
+u8 tileNum7[64] = {
+   0,2,2,2,2,2,2,0,
+   0,0,0,0,0,0,2,0,
+   0,0,0,0,0,0,2,0,
+   0,0,0,0,0,2,0,0,
+   0,0,2,2,2,2,2,0,
+   0,0,0,2,0,0,0,0,
+   0,0,0,2,0,0,0,0,
+   0,0,0,2,0,0,0,0
+};
+
+u8 tileNum8[64] = {
+   0,0,2,2,2,2,0,0,
+   0,2,0,0,0,0,2,0,
+   0,2,0,0,0,0,2,0,
+   0,0,2,2,2,2,0,0,
+   0,2,0,0,0,0,2,0,
+   0,2,0,0,0,0,2,0,
+   0,2,0,0,0,0,2,0,
+   0,0,2,2,2,2,0,0
+};
+u8 tileNum9[64] = {
+   0,0,2,2,2,2,0,0,
+   0,2,0,0,0,0,2,0,
+   0,2,0,0,0,0,2,0,
+   0,2,0,0,0,0,2,0,
+   0,0,2,2,2,2,2,0,
+   0,0,0,0,0,0,2,0,
+   0,2,0,0,0,0,2,0,
+   0,0,2,2,2,2,0,0
+};
+
 
 void InitMainScreen(){
 
-	REG_DISPCNT = MODE_5_2D | DISPLAY_BG2_ACTIVE | DISPLAY_BG3_ACTIVE;
+	REG_DISPCNT = MODE_5_2D | DISPLAY_BG2_ACTIVE | DISPLAY_BG3_ACTIVE | DISPLAY_BG0_ACTIVE;
 
 
 	VRAM_A_CR = VRAM_ENABLE | VRAM_A_MAIN_BG;
 	VRAM_B_CR = VRAM_ENABLE | VRAM_B_MAIN_BG;
 
 	BGCTRL[3] = BG_BMP_BASE(0) | BgSize_B8_256x256;
-
 
 	REG_BG3PA = 256;
 	REG_BG3PC = 0;
@@ -37,6 +140,36 @@ void InitMainScreen(){
 	REG_BG2PC = 0;
 	REG_BG2PB = 0;
 	REG_BG2PD = 256;
+
+	//custom colors for tiles
+
+	BG_PALETTE[2] = RGB15(31,31,31);
+
+	BGCTRL[0] = BG_32x32 | BG_COLOR_256 | BG_MAP_BASE(23) | BG_TILE_BASE(15);
+
+	dmaCopy(tileNum0, &BG_TILE_RAM(15)[0], 64);
+	dmaCopy(tileNum1, &BG_TILE_RAM(15)[32], 64);
+	dmaCopy(tileNum2, &BG_TILE_RAM(15)[64], 64);
+	dmaCopy(tileNum3, &BG_TILE_RAM(15)[96], 64);
+	dmaCopy(tileNum4, &BG_TILE_RAM(15)[128], 64);
+	dmaCopy(tileNum5, &BG_TILE_RAM(15)[160], 64);
+	dmaCopy(tileNum6, &BG_TILE_RAM(15)[192], 64);
+	dmaCopy(tileNum7, &BG_TILE_RAM(15)[224], 64);
+	dmaCopy(tileNum8, &BG_TILE_RAM(15)[256], 64);
+	dmaCopy(tileNum9, &BG_TILE_RAM(15)[288], 64);
+}
+
+void DrawFrequencyMain(){
+	int frequency = GetFrequency();
+
+	BG_MAP_RAM(23)[4]=  frequency % 10;
+	BG_MAP_RAM(23)[3]=  (frequency /10) % 10;
+	BG_MAP_RAM(23)[2]=  (frequency / 100) % 10;
+	BG_MAP_RAM(23)[1]=  (frequency / 1000)% 10;
+	BG_MAP_RAM(23)[0]=  (frequency / 10000) % 10;
+
+
+
 }
 
 void ZoomIn(){
@@ -75,6 +208,8 @@ void MoveLeft(){
 
 void DrawWaveMain(int16_t * main_buffer, int length){
 
+	DrawFrequencyMain();
+
 	u16 yellow = ARGB16(1,31,31,0);
 
 	u16 transparent = ARGB16(0,0,0,0);
@@ -92,7 +227,7 @@ void DrawWaveMain(int16_t * main_buffer, int length){
 	case SAW_WAVE:
 		for(int i = 0; i< length  ; i++){
 
-			int x = (i / (double) 4800) * 256 * actualZoom ;
+			int x = (i / (double) length) * 256 * actualZoom ;
 
 			int y = ((main_buffer[i] + MAXVALUE) / ((double)2*MAXVALUE)) * VERTICALRANGE;
 
@@ -114,7 +249,7 @@ void DrawWaveMain(int16_t * main_buffer, int length){
 	case SIN_WAVE:
 		for(int i = 0; i< length  ; i++){
 
-			int x = (i / (double) 4800) * 256 * actualZoom;
+			int x = (i / (double) length) * 256 * actualZoom;
 
 			int y = ((main_buffer[i] + MAXVALUE) / ((double)2*MAXVALUE)) * VERTICALRANGE;
 
@@ -127,7 +262,7 @@ void DrawWaveMain(int16_t * main_buffer, int length){
 	case WHITE_NOISE:
 		for(int i = 0; i< length  ; i++){
 
-			int x = (i / (double) 4800) * 256 * actualZoom;
+			int x = (i / (double) length) * 256 * actualZoom;
 
 			int y = ((main_buffer[i] + MAXVALUE) / ((double)2*MAXVALUE)) * VERTICALRANGE;
 
@@ -139,7 +274,7 @@ void DrawWaveMain(int16_t * main_buffer, int length){
 	case SQUARE_WAVE:
 		for(int i = 0; i< length  ; i++){
 
-			int x = (i / (double) 4800) * 256 * actualZoom ;
+			int x = (i / (double) length) * 256 * actualZoom ;
 
 			int y = ((main_buffer[i] + MAXVALUE) / ((double)2*MAXVALUE)) * VERTICALRANGE;
 
