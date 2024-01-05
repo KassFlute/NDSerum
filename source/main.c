@@ -25,7 +25,8 @@ int sub_screen_mode = 0; // 0 = controls, 1 = drawing
 
 int fader_width = 16; // Width of the faders in pixels
 int freq_fader_start = 8; // Start of the volume fader in pixels
-int ampp_fader_start = 32; // Start of the amplitude fader in pixels
+int amp_fader_start = 32; // Start of the amplitude fader in pixels
+int phase_fader_start = 56; // Start of the phase fader in pixels
 
 int main(void) {
 
@@ -110,7 +111,7 @@ int main(void) {
 					}
 				}
 
-				if (touch.px >= ampp_fader_start && touch.px <= ampp_fader_start + fader_width) {
+				if (touch.px >= amp_fader_start && touch.px <= amp_fader_start + fader_width) {
 					int touchY = MIN(MAX(touch.py, 3), 189) - 3; // Calculating as if the screen was 186 pixels wide (instead of 192) because impossible to touch
 					float newAmplitude = ((float)(186-touchY)) / 186;
 					if (newAmplitude != GetAmplitude()){

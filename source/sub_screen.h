@@ -13,3 +13,6 @@ void SetFreqFader(int freq);
 
 void DrawAmplitudeFader(); // Mystique 2
 void SetAmplitudeFader(float amplitude);
+
+void DrawPhaseFader();
+void SetPhaseFader(int phase);

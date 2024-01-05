@@ -1,11 +1,15 @@
 #include "sub_screen.h"
 
+int fader_range = 23;
+
 int x_volume_fader = 1;
 int y_volume_fader = 1;
-int fader_range = 23;
 
 int x_amplitude_fader = 4;
 int y_amplitude_fader = 1;
+
+int x_phase_fader = 7;
+int y_phase_fader = 1;
 
 //Tile #0 (transparent tile)
 u8 tile0[64] = {
@@ -63,6 +67,7 @@ void InitSubScreen() {
 
     SetFreqFader(GetFrequency());    
     SetAmplitudeFader(GetAmplitude());
+    SetPhaseFader(GetPhase());
 }
 
 void DrawFreqFader() {
@@ -122,4 +127,33 @@ void SetAmplitudeFader(float amplitude) {
     printf("Amplitude: %f\n", amplitude);
     y_amplitude_fader = 23 - (int) ceil((((double)(amplitude)) / (1.0 / ((double)fader_range))));
     DrawAmplitudeFader();
+}
+
+void DrawPhaseFader() {
+    /*
+     * Draw the phase fader
+     */
+
+    // Erase the previous fader
+    for(int x=x_phase_fader; x<x_phase_fader+2; x+=1) {
+        for(int y=0; y<32; y+=1) {
+           BG_MAP_RAM_SUB(1)[32*y + x] = 0;
+        }
+    }
+
+    // Draw the new fader
+    for(int x=x_phase_fader; x<x_phase_fader+2; x+=1) {
+        for(int y=y_phase_fader; y<y_phase_fader+1; y+=1) {
+           BG_MAP_RAM_SUB(1)[32*y + x] = 1;
+        }
+    }
+}
+
+void SetPhaseFader(int phase) {
+    /*
+     * Set the position of the phase fader
+     * @param phase : the new phase for the fader
+     */
+    y_phase_fader = 23 - (int) ceil((((double)(phase)) / (360.0 / ((double)fader_range))));
+    DrawPhaseFader();
 }

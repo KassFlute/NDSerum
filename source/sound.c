@@ -194,6 +194,23 @@ float GetAmplitude() {
 	return actualAmplitude;
 }
 
+void SetPhase(int newPhase) {
+	/*
+	 * Set the phase of the wave
+	 * @param newPhase : the new phase of the wave
+	 */
+	actualPhase = newPhase;
+	FillBuffer();
+}
+
+int GetPhase() {
+	/*
+	 * Return the phase of the wave
+	 * @return the phase of the wave
+	 */
+	return actualPhase;
+}
+
 void SetWaveType(WaveType newWaveType){
 	/*
 	 * Set the type of the wave
