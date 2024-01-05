@@ -10,6 +10,17 @@
 int actualZoom = 1;
 int actualOffset = 0;
 
+u8 tileNum10[64] = {
+   0,0,0,0,0,0,0,0,
+   0,0,0,0,0,0,0,0,
+   0,0,0,0,0,0,0,0,
+   0,0,0,0,0,0,0,0,
+   0,0,0,0,0,0,0,0,
+   0,0,0,0,0,0,0,0,
+   0,0,0,0,0,0,0,0,
+   0,0,0,0,0,0,0,0
+};
+
 u8 tileNum0[64] = {
    0,0,2,2,2,2,0,0,
    0,2,0,0,0,0,2,0,
@@ -134,7 +145,7 @@ void InitMainScreen(){
 
 	swiCopy(BGMainPal,BG_PALETTE,BGMainPalLen/2);
 
-	BGCTRL[2] = BG_BMP_BASE(3) | BgSize_B16_256x256;
+	BGCTRL[2] = BG_BMP_BASE(5) | BgSize_B16_256x256;
 
 	REG_BG2PA = 256;
 	REG_BG2PC = 0;
@@ -145,30 +156,36 @@ void InitMainScreen(){
 
 	BG_PALETTE[2] = RGB15(31,31,31);
 
-	BGCTRL[0] = BG_32x32 | BG_COLOR_256 | BG_MAP_BASE(23) | BG_TILE_BASE(15);
+	BGCTRL[0] = BG_32x32 | BG_COLOR_256 | BG_MAP_BASE(24) | BG_TILE_BASE(4);
 
-	dmaCopy(tileNum0, &BG_TILE_RAM(15)[0], 64);
-	dmaCopy(tileNum1, &BG_TILE_RAM(15)[32], 64);
-	dmaCopy(tileNum2, &BG_TILE_RAM(15)[64], 64);
-	dmaCopy(tileNum3, &BG_TILE_RAM(15)[96], 64);
-	dmaCopy(tileNum4, &BG_TILE_RAM(15)[128], 64);
-	dmaCopy(tileNum5, &BG_TILE_RAM(15)[160], 64);
-	dmaCopy(tileNum6, &BG_TILE_RAM(15)[192], 64);
-	dmaCopy(tileNum7, &BG_TILE_RAM(15)[224], 64);
-	dmaCopy(tileNum8, &BG_TILE_RAM(15)[256], 64);
-	dmaCopy(tileNum9, &BG_TILE_RAM(15)[288], 64);
+	dmaCopy(tileNum0, &BG_TILE_RAM(4)[0], 64);
+	dmaCopy(tileNum1, &BG_TILE_RAM(4)[32], 64);
+	dmaCopy(tileNum2, &BG_TILE_RAM(4)[64], 64);
+	dmaCopy(tileNum3, &BG_TILE_RAM(4)[96], 64);
+	dmaCopy(tileNum4, &BG_TILE_RAM(4)[128], 64);
+	dmaCopy(tileNum5, &BG_TILE_RAM(4)[160], 64);
+	dmaCopy(tileNum6, &BG_TILE_RAM(4)[192], 64);
+	dmaCopy(tileNum7, &BG_TILE_RAM(4)[224], 64);
+	dmaCopy(tileNum8, &BG_TILE_RAM(4)[256], 64);
+	dmaCopy(tileNum9, &BG_TILE_RAM(4)[288], 64);
+	dmaCopy(tileNum10, &BG_TILE_RAM(4)[320], 64);
 }
 
 void DrawFrequencyMain(){
+
 	int frequency = GetFrequency();
 
-	BG_MAP_RAM(23)[4]=  frequency % 10;
-	BG_MAP_RAM(23)[3]=  (frequency /10) % 10;
-	BG_MAP_RAM(23)[2]=  (frequency / 100) % 10;
-	BG_MAP_RAM(23)[1]=  (frequency / 1000)% 10;
-	BG_MAP_RAM(23)[0]=  (frequency / 10000) % 10;
+	for(int x = 0; x<32 ; x++){
+		for(int y = 0; y<32; y++){
+			BG_MAP_RAM(24)[y*32 + x]=  10;
+		}
+	}
 
-
+	BG_MAP_RAM(24)[4]=  frequency % 10;
+	BG_MAP_RAM(24)[3]=  (frequency /10) % 10;
+	BG_MAP_RAM(24)[2]=  (frequency / 100) % 10;
+	BG_MAP_RAM(24)[1]=  (frequency / 1000)% 10;
+	BG_MAP_RAM(24)[0]=  (frequency / 10000) % 10;
 
 }
 
@@ -223,7 +240,7 @@ void DrawWaveMain(int16_t * main_buffer, int length){
 
 	for(int x = 0 ; x < 256 ; x ++){
 		for(int y = 0 ; y < 192; y++){
-			BG_BMP_RAM(3)[x + 256 * y] = transparent;
+			BG_BMP_RAM(5)[x + 256 * y] = transparent;
 		}
 	}
 
@@ -245,10 +262,10 @@ void DrawWaveMain(int16_t * main_buffer, int length){
 				if(y - yNext > 0){
 
 					for(int i = 0 ; i<=VERTICALRANGE; i++){
-						BG_BMP_RAM(3)[x - actualOffset + 256 * (VERTICALRANGE-i + GENERALOFFSET)] = yellow;
+						BG_BMP_RAM(5)[x - actualOffset + 256 * (VERTICALRANGE-i + GENERALOFFSET)] = yellow;
 					}
 				}
-				BG_BMP_RAM(3)[x - actualOffset + 256 * (VERTICALRANGE-y + GENERALOFFSET)] = yellow;
+				BG_BMP_RAM(5)[x - actualOffset + 256 * (VERTICALRANGE-y + GENERALOFFSET)] = yellow;
 			}
 		}
 		break;
