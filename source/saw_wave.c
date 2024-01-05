@@ -29,8 +29,6 @@ void SawFill(int16_t* array, int actualFrequency, int* length ){
 
 	*length = sampleNumber;
 
-	printf("sample number: %d\n",sampleNumber);
-
 	double slope = (2*MAXVALUE) / samplesPerPeriod; // Quentin
 
 	SawWave(slope,samplesPerPeriod,sampleNumber,array);
