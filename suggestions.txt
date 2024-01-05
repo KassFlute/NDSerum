@@ -1,9 +1,13 @@
 nécessaire:
-tiles de numéro main screen
-axes mieux
+tiles de numéro main screen : OK
+axes mieux 
 
 Fader volume
 Fader autres trucs rigolo
+
+Mettre un timer quelque part
+
+PASSER LES BOUTONS EN INTERRUPT (PAS DE POLLING)
 
 bonus:
 Le zoom qui affiche par défaut que une période.

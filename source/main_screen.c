@@ -172,6 +172,11 @@ void DrawFrequencyMain(){
 
 }
 
+//pas sur de l'utilité de celle-ci
+void DrawTimeScaleMain(){
+
+}
+
 void ZoomIn(){
 	actualZoom *= 2;
 }
@@ -209,6 +214,8 @@ void MoveLeft(){
 void DrawWaveMain(int16_t * main_buffer, int length){
 
 	DrawFrequencyMain();
+	DrawTimeScaleMain();
+
 
 	u16 yellow = ARGB16(1,31,31,0);
 
