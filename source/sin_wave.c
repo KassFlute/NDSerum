@@ -9,20 +9,17 @@ void SinFill(int16_t *array, int frequency, int *length){
      * @param length : pointer to write the number of samples written in the array
      */
     int nPeriod = NPeriodFromFrequency(frequency);
-
     double samplesPerPeriod = SAMPLERATE / (double) frequency;
-
     int sampleNumber = samplesPerPeriod * nPeriod;
 
     double angleStep = (double) 360 * nPeriod / sampleNumber ;
+    double x = 0;
 
-    for(int i = 0 ; i < sampleNumber ; i++){
-
-    	double  x = i * angleStep;
-
+    for(int i = 0 ; i < sampleNumber ; i++) {
+    	x += angleStep;
         short sample = (short) (MAXVALUE * sin( M_PI * x / (double)180));
-
         array[i] = sample;
     }
+    
     *length = sampleNumber;
 }

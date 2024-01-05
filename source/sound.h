@@ -9,12 +9,11 @@
 #include "sin_wave.h"
 #include "square_wave.h"
 
-#define SAMPLERATE 48000
-#define BUFFERLENGTH 9600//9600 // Length of the stream buffer
+#define SAMPLERATE 20000 // 48 kHz to go upto 24 kHz of sound
+#define BUFFERLENGTH 4800 //4800 // Length of the stream buffer
 #define MINVALUE -32768 // Audio samples are 16 bits signed integers
 #define MAXVALUE 32767
 #define NUMBERPERIOD 20 // WTF is this ?
-#define N_SAMPLES 4800 // Number of samples to be generated at each call of FillBuffer() recalculated each time in the fill functions
 
 typedef enum
 {
