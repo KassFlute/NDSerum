@@ -13,7 +13,8 @@ void SinFill(int16_t *array, int frequency, float amplitude, int phase, int *len
     int sampleNumber = samplesPerPeriod * nPeriod;
 
     double angleStep = (double) 360 * nPeriod / sampleNumber ;
-    double x = 0;
+    double angleOffset = (double) 360 * phase / 360;
+    double x = -angleOffset;
 
     double range = MAXVALUE * amplitude;
 

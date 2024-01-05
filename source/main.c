@@ -105,18 +105,29 @@ int main(void) {
 					newFrequency = newFrequency -  (newFrequency % 10); // Round to the nearest 10 because some freq don't work
 					if (newFrequency != GetFrequency()){
 						SetFrequency(newFrequency);
-						printf("Frequency: %d\n", GetFrequency());
 						SetFreqFader(GetFrequency());
 						DrawWaveMain(main_buffer, main_buffer_length);
 					}
 				}
 
+				// Amplitude fader
 				if (touch.px >= amp_fader_start && touch.px <= amp_fader_start + fader_width) {
 					int touchY = MIN(MAX(touch.py, 3), 189) - 3; // Calculating as if the screen was 186 pixels wide (instead of 192) because impossible to touch
 					float newAmplitude = ((float)(186-touchY)) / 186;
 					if (newAmplitude != GetAmplitude()){
 						SetAmplitude(newAmplitude);
 						SetAmplitudeFader(GetAmplitude());
+						DrawWaveMain(main_buffer, main_buffer_length);
+					}
+				}
+
+				// Phase fader
+				if (touch.px >= phase_fader_start && touch.px <= phase_fader_start + fader_width) {
+					int touchY = MIN(MAX(touch.py, 3), 189) - 3; // Calculating as if the screen was 186 pixels wide (instead of 192) because impossible to touch
+					int newPhase = ((186-touchY) * 360) / 186;
+					if (newPhase != GetPhase()){
+						SetPhase(newPhase);
+						SetPhaseFader(GetPhase());
 						DrawWaveMain(main_buffer, main_buffer_length);
 					}
 				}

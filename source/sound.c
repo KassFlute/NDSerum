@@ -81,6 +81,8 @@ int NPeriodFromFrequency(int frequency) {
 	 * @param frequency : the frequency of the wave
 	 * @return the number of period of the wave to fill
 	 */
+	return 1;
+
 	int nPeriod = frequency / 10;
 	// Clamp the number between 1 and 10000
 	return MAX(MIN(nPeriod, 10000), 1);
