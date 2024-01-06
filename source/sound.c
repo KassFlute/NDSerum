@@ -43,9 +43,9 @@ void InitSound() {
 	 */
 
 	// Set the sound system parameters
-	actualFrequency = 35;
-	actualAmplitude = 0.11;
-	actualPhase = 0;
+	actualFrequency = 100;
+	actualAmplitude = 0.5;
+	actualPhase = 180;
 	currentWaveType = SAW_WAVE;
 	isPlaying = 1;
 

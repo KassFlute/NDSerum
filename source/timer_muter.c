@@ -1,6 +1,6 @@
 #include "timer_muter.h"
 
-int muter_interval;
+int gate_speed; // Define the speed of the gate (in pixels because of the fader length: 0-95)
 int muter_enabled;
 
 void Timer1_ISR() {
@@ -8,6 +8,7 @@ void Timer1_ISR() {
         printf("MUTER");
         // Mute the sound
         PauseResumeSound();
+        SetMuteButton(!IsPlaying());
     }
 }
 
@@ -15,37 +16,57 @@ void InitTimer() {
     /*
         * Initialize the timer
      */
-    muter_interval = 1;
+    gate_speed = 20;
     muter_enabled = 0;
+    int gate_frequency = (int)((gate_speed * (100 - 1)) / 95) + 1;
 
     // Timer 0 setup
     TIMER_CR(1) = TIMER_ENABLE | TIMER_DIV_1024 | TIMER_IRQ_REQ;
-    TIMER_DATA(1) = TIMER_FREQ_1024(muter_interval);
+    TIMER_DATA(1) = TIMER_FREQ_1024(gate_frequency);
 
     // Interupt setup
     irqSet(IRQ_TIMER1, Timer1_ISR);
     irqEnable(IRQ_TIMER1);
 }
 
-void SetMuteInterval(int interval) {
-    /*
-        * Set the mute interval
-        * @param interval : the new mute interval
-     */
-    muter_interval = MIN(MAX(interval, 0.5), 10);
-}
-
-int GetMuteInterval() {
-    /*
-        * Return the mute interval
-        * @return the mute interval
-     */
-    return muter_interval;
-}
-
 void EnableDisableMuter() {
     /*
         * Enable or disable the muter
      */
-    muter_enabled = !muter_enabled;
+    if (muter_enabled) {
+        // Disable the muter
+        muter_enabled = 0;
+        PauseSound();
+        SetMuteButton(1);
+    } else {
+        // Enable the muter
+        muter_enabled = 1;
+    }
+}
+
+void SetGateSpeed(int speed) {
+    /*
+        * Set the speed of the gate
+        * @param speed : the new speed of the gate
+     */
+    gate_speed = MIN(MAX(speed, 0), 95);
+    int gate_frequency = (int)((gate_speed * (100 - 1)) / 95) + 1;
+    printf("Gate interval: %d\n", gate_frequency);
+    TIMER_DATA(1) = TIMER_FREQ_1024(gate_frequency);
+}
+
+int GetGateSpeed() {
+    /*
+        * Return the speed of the gate
+        * @return the speed of the gate
+     */
+    return gate_speed;
+}
+
+int IsGated() {
+    /*
+        * Return if the muter is enabled
+        * @return 1 if the muter is enabled, 0 otherwise
+     */
+    return muter_enabled;
 }

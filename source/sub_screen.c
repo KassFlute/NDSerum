@@ -1,18 +1,29 @@
 #include "sub_screen.h"
 
-int fader_range = 23;
+int fader_range = 23; // Range of the faders (in tiles) for the main faders
 
-int x_volume_fader = 1;
-int y_volume_fader = 1;
+int x_volume_fader = 1; // Static fader position
+int y_volume_fader = 1; // Dynamic fader position
 
-int x_amplitude_fader = 4;
-int y_amplitude_fader = 1;
+int x_amplitude_fader = 4; // Static fader position
+int y_amplitude_fader = 1; // Dynamic fader position
 
-int x_phase_fader = 7;
-int y_phase_fader = 1;
+int x_phase_fader = 7; // Static fader position
+int y_phase_fader = 1; // Dynamic fader position
 
-int x_wave_selector = 28;
-int y_wave_selector = 1;
+int x_wave_selector = 28; // Static selector position
+int y_wave_selector = 1; // Dynamic selector position
+
+int x_mute_button = 28; // Static button position
+int y_mute_button = 15; // Static button position
+int is_muted = 0; // 0 = not muted, 1 = muted   !! opposite of playing in sound.c
+
+int x_gate_button = 23; // Static button position
+int y_gate_button = 15; // Static button position
+int is_gated = 0; // 0 = not gated, 1 = gated
+
+int x_gate_fader = 24; // Static fader position
+int y_gate_fader = 12; // Dynamic fader position
 
 //Tile #0 (transparent tile)
 u8 tile0[64] = {
@@ -190,6 +201,9 @@ void InitSubScreen() {
     SetAmplitudeFader(GetAmplitude());
     SetPhaseFader(GetPhase());
     SetWaveSelector(GetWaveType());
+    SetMuteButton(!IsPlaying());
+    SetGateButton(IsGated());
+    SetGateFader(GetGateSpeed());
 }
 
 void DrawFreqFader() {
@@ -206,7 +220,7 @@ void DrawFreqFader() {
 
     // Draw the new fader
     for(int x=x_volume_fader; x<x_volume_fader+2; x+=1) {
-        for(int y=y_volume_fader; y<y_volume_fader+1; y+=1) {
+        for(int y=y_volume_fader; y<y_volume_fader+1; y+=1) { // this loop is useless, y_volume_fader is always 1 but allows to change faders size if needed
            BG_MAP_RAM_SUB(1)[32*y + x] = 1;
         }
     }
@@ -308,4 +322,93 @@ void SetWaveSelector(WaveType wave) {
      */
     y_wave_selector = 1 + wave * 3;
     DrawWaveSelector();
+}
+
+void DrawMuteButton() {
+    /*
+     * Draw the mute button
+     */
+    if (is_muted) {
+        // Draw the red highlight
+        for (int x = x_mute_button; x < x_mute_button+3; x += 1) {
+            for (int y = y_mute_button; y < y_mute_button+3; y += 1) {
+                BG_MAP_RAM_SUB(1)[32 * y + x] = 2 + 3 * (y - y_mute_button) + (x - x_mute_button);
+            }
+        }
+    } else {
+        // Erase the previous red highlight
+        for(int x=x_mute_button; x<x_mute_button+3; x+=1) {
+            for(int y=y_mute_button; y<=y_mute_button+3; y+=1) {
+                BG_MAP_RAM_SUB(1)[32*y + x] = 0;
+            }
+        }
+    }
+}
+
+void SetMuteButton(int enabled) {
+    /*
+     * Set the position of the mute button
+     * @param enabled : the new state of the button
+     */
+    is_muted = enabled ? 1 : 0;
+    DrawMuteButton();
+}
+
+void DrawGateButton() {
+    /*
+     * Draw the gate button
+     */
+    if (is_gated) {
+        // Draw the red highlight
+        for (int x = x_gate_button; x < x_gate_button+3; x += 1) {
+            for (int y = y_gate_button; y < y_gate_button+3; y += 1) {
+                BG_MAP_RAM_SUB(1)[32 * y + x] = 2 + 3 * (y - y_gate_button) + (x - x_gate_button);
+            }
+        }
+    } else {
+        // Erase the previous red highlight
+        for(int x=x_gate_button; x<x_gate_button+3; x+=1) {
+            for(int y=y_gate_button; y<=y_gate_button+3; y+=1) {
+                BG_MAP_RAM_SUB(1)[32*y + x] = 0;
+            }
+        }
+    }
+}
+
+void SetGateButton(int enabled) {
+    /*
+     * Set the position of the gate button
+     * @param enabled : the new state of the button
+     */
+    is_gated = enabled ? 1 : 0;
+    DrawGateButton();
+}
+
+void DrawGateFader() {
+    /*
+     * Draw the gate fader
+     */
+
+    // Erase the previous fader
+    for(int x=x_gate_fader; x<x_gate_fader+2; x+=1) {
+        for(int y=1; y<=12; y+=1) {
+           BG_MAP_RAM_SUB(1)[32*y + x] = 0;
+        }
+    }
+
+    // Draw the new fader
+    for(int x=x_gate_fader; x<x_gate_fader+2; x+=1) {
+        for(int y=y_gate_fader; y<y_gate_fader+1; y+=1) {
+           BG_MAP_RAM_SUB(1)[32*y + x] = 1;
+        }
+    }
+}
+
+void SetGateFader(int gate_speed) {
+    /*
+     * Set the position of the gate fader
+     * @param gate_speed : the new gate speed for the fader
+     */
+    y_gate_fader = (11 - (gate_speed / 8)) + 1; // Transform gate speed that goes from 0 to 96 to fader position (in tile) that goes from 12 to 1
+    DrawGateFader();
 }

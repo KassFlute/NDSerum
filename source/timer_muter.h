@@ -1,6 +1,7 @@
 #include <nds.h>
 
 #include "sound.h"
+#include "sub_screen.h"
 
 
 #define MAX(a, b) (((a) > (b)) ? (a) : (b))
@@ -8,6 +9,7 @@
 
 void InitTimer();
 
-void SetMuteInterval(int interval);
-int GetMuteInterval();
 void EnableDisableMuter();
+void SetGateSpeed(int speed);
+int GetGateSpeed();
+int IsGated();

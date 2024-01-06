@@ -39,3 +39,9 @@ B: frequency --
 bonus:
 
 l'écran du bas peut aussi servir à dessiner une wave custom. (zeubi)
+
+un bouton on/off qui éteint vraiment (stoper le stream et set une wave "vide")
+
+diable timer interupts instead of ignoring them when gate is off
+
+mute avec le stream et pas en mettant des zeros dans le buffer 🥴🥴

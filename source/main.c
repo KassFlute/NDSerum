@@ -27,11 +27,22 @@ int sub_screen_mode = 0; // 0 = controls, 1 = drawing
 int freq_fader_start = 8; // Start of the volume fader in pixels
 int amp_fader_start = 32; // Start of the amplitude fader in pixels
 int phase_fader_start = 56; // Start of the phase fader in pixels
-int fader_width = 16;		// Width of the faders in pixels
+int fader_width = 16;		// Width of all the faders in pixels
 int wave_selector_start_x = 224; // Start of the wave selector in pixels (x)
 int wave_selector_start_y = 8; // Start of the wave selector in pixels (y)
 int wave_selector_width = 24; // Width of the wave selector in pixels
 int wave_selector_height = 96; // Height of the wave selector in pixels
+int mute_button_start_x = 224; // Start of the mute button in pixels (x)
+int mute_button_start_y = 120; // Start of the mute button in pixels (y)
+int mute_button_width = 24; // Width of the mute button in pixels
+int mute_button_height = 24; // Height of the mute button in pixels
+int gate_button_start_x = 184; // Start of the gate button in pixels (x)
+int gate_button_start_y = 120; // Start of the gate button in pixels (y)
+int gate_button_width = 24; // Width of the gate button in pixels
+int gate_button_height = 24; // Height of the gate button in pixels
+int gate_fader_start_x = 192; // Start of the gate fader in pixels (x)
+int gate_fader_start_y = 8; // Start of the gate fader in pixels (y)
+int gate_fader_length = 96; // Length of the gate fader in pixels
 
 int wasCalled = 0;
 
@@ -41,6 +52,7 @@ void keys_ISR() {
 	if (keys & KEY_A) {
 		printf("A\n");
 		PauseResumeSound();
+		SetMuteButton(!IsPlaying());
 	}
 	if (keys & KEY_B) {
 		printf("B\n");
@@ -107,6 +119,8 @@ int main(void) {
 		printf("Sound system initialized.\n");
 	#endif
 
+	InitTimer();
+
 	InitMainScreen();
 	InitSubScreen();
 
@@ -114,8 +128,6 @@ int main(void) {
 	REG_KEYCNT = (1 << 14) | KEY_A | KEY_B | KEY_X | KEY_Y | KEY_L | KEY_R | KEY_RIGHT | KEY_LEFT | KEY_UP | KEY_DOWN;
 	irqSet(IRQ_KEYS, &keys_ISR);
 	irqEnable(IRQ_KEYS);
-
-	InitTimer();
 
 	#ifdef DEBUG
 		consoleDemoInit();
@@ -179,6 +191,7 @@ int main(void) {
 		if (keys == KEY_Y) {
 			printf("Y\n");
 			EnableDisableMuter();
+			SetGateButton(IsGated());
 		}
 		// Touch screen pressed on time
 		if (keys & KEY_TOUCH) {
@@ -197,10 +210,26 @@ int main(void) {
 						}
 					}
 				}
+
+				// Mute button
+				if (touch.px >= mute_button_start_x && touch.px <= mute_button_start_x + mute_button_width) {
+					if (touch.py >= mute_button_start_y && touch.py <= mute_button_start_y + mute_button_height) {
+						PauseResumeSound();
+						SetMuteButton(!IsPlaying());
+					}
+				}
+
+				// Gate button
+				if (touch.px >= gate_button_start_x && touch.px <= gate_button_start_x + gate_button_width) {
+					if (touch.py >= gate_button_start_y && touch.py <= gate_button_start_y + gate_button_height) {
+						EnableDisableMuter();
+						SetGateButton(IsGated());
+					}
+				}
 			}
 		}
 
-		// Touch screen held
+		// Touch screen held -> for the faders to always react
 		scanKeys();
 		keys = keysHeld();
 		if (keys & KEY_TOUCH) {
@@ -241,6 +270,19 @@ int main(void) {
 						SetPhase(newPhase);
 						SetPhaseFader(GetPhase());
 						DrawWaveMain(main_buffer, main_buffer_length);
+					}
+				}
+
+				// Gate speed fader
+				if (touch.px >= gate_fader_start_x && touch.px <= gate_fader_start_x + fader_width) {
+					if (touch.py >= gate_fader_start_y && touch.py < gate_fader_start_y + gate_fader_length) {
+						printf("Touch (gate speed): %d, %d\n", touch.px, touch.py);
+						int newGateSpeed = 95 - (touch.py - 8);
+						//printf("New gate speed: %d\n", newGateSpeed);
+						if (newGateSpeed != GetGateSpeed()) {
+							SetGateSpeed(newGateSpeed);
+							SetGateFader(GetGateSpeed());
+						}
 					}
 				}
 			}
