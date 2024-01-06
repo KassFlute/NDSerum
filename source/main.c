@@ -24,10 +24,14 @@ int main_buffer_length;	   // main buffer length (in samples)
 
 int sub_screen_mode = 0; // 0 = controls, 1 = drawing
 
-int fader_width = 16; // Width of the faders in pixels
 int freq_fader_start = 8; // Start of the volume fader in pixels
 int amp_fader_start = 32; // Start of the amplitude fader in pixels
 int phase_fader_start = 56; // Start of the phase fader in pixels
+int fader_width = 16;		// Width of the faders in pixels
+int wave_selector_start_x = 224; // Start of the wave selector in pixels (x)
+int wave_selector_start_y = 8; // Start of the wave selector in pixels (y)
+int wave_selector_width = 24; // Width of the wave selector in pixels
+int wave_selector_height = 96; // Height of the wave selector in pixels
 
 int wasCalled = 0;
 
@@ -165,7 +169,7 @@ int main(void) {
 
     	scanKeys();
 		unsigned keys = keysDown();
-
+		// X and Y pressed one time
 		if (keys == KEY_X) {
 			printf("X\n");
 			IncrementFrequency();
@@ -176,8 +180,27 @@ int main(void) {
 			printf("Y\n");
 			EnableDisableMuter();
 		}
+		// Touch screen pressed on time
+		if (keys & KEY_TOUCH) {
+			touchPosition touch;
+			touchRead(&touch);
+			if (touch.px || touch.py) {
+				// Wave selector
+				if (touch.px >= wave_selector_start_x && touch.px <= wave_selector_start_x + wave_selector_width) {
+					if (touch.py >= wave_selector_start_y && touch.py <= wave_selector_start_y + wave_selector_height) {
+						int touchY_in_selector = touch.py - wave_selector_start_y;
+						int newWave = touchY_in_selector / (wave_selector_height / 4);
+						if (newWave != GetWaveType()) {
+							SetWaveType(newWave);
+							SetWaveSelector(GetWaveType());
+							DrawWaveMain(main_buffer, main_buffer_length);
+						}
+					}
+				}
+			}
+		}
 
-		// Touch screen
+		// Touch screen held
 		scanKeys();
 		keys = keysHeld();
 		if (keys & KEY_TOUCH) {
