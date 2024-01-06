@@ -74,12 +74,14 @@ void keys_ISR() {
 	if (keys & KEY_LEFT) {
 		printf("LEFT\n");
 		DecrementWaveType();
+		SetWaveSelector(GetWaveType());
 		//DrawWaveMain(main_buffer, main_buffer_length);
 		wasCalled = 1;
 	}
 	if (keys & KEY_RIGHT) {
 		printf("RIGHT\n");
 		IncrementWaveType();
+		SetWaveSelector(GetWaveType());
 		//DrawWaveMain(main_buffer, main_buffer_length);
 		wasCalled = 1;
 	}
