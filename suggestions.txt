@@ -1,5 +1,11 @@
 nécessaire:
 
+
+les interupts prennent trop de temps 
+-> mettre draw main dans la fonction principale (boucle de polling) 
+-> tester en boucle (polling) si des parametres on changés (fréquence, phase, amplitude, type de wave) 
+-> si ils ont changés, redraw ! 
+
 axes mieux : tiles lettre + fonction temps
 
 Améliorer le muter

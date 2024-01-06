@@ -29,6 +29,8 @@ int freq_fader_start = 8; // Start of the volume fader in pixels
 int amp_fader_start = 32; // Start of the amplitude fader in pixels
 int phase_fader_start = 56; // Start of the phase fader in pixels
 
+int wasCalled = 0;
+
 void keys_ISR() {
 	printf("Interrupt\n");
 	u16 keys = ~(REG_KEYINPUT);
@@ -40,39 +42,46 @@ void keys_ISR() {
 		printf("B\n");
 		DecrementFrequency();
 		SetFreqFader(GetFrequency());
-		DrawWaveMain(main_buffer, main_buffer_length);
+		//DrawWaveMain(main_buffer, main_buffer_length);
+		wasCalled = 1;
 	}
 	if (keys & KEY_L) {
 		printf("L\n");
 		DecrementPhase10();
 		SetPhaseFader(GetPhase());
-		DrawWaveMain(main_buffer, main_buffer_length);
+		//DrawWaveMain(main_buffer, main_buffer_length);
+		wasCalled = 1;
 	}
 	if (keys & KEY_R) {
 		printf("R\n");
 		IncrementPhase10();
 		SetPhaseFader(GetPhase());
-		DrawWaveMain(main_buffer, main_buffer_length);
+		//DrawWaveMain(main_buffer, main_buffer_length);
+		wasCalled = 1;
 	}
 	if (keys & KEY_UP) {
 		printf("UP\n");
 		ZoomIn();
-		DrawWaveMain(main_buffer, main_buffer_length);
+		//DrawWaveMain(main_buffer, main_buffer_length);
+		wasCalled = 1;
 	}
 	if (keys & KEY_DOWN) {
 		printf("DOWN\n");
 		ZoomOut();
-		DrawWaveMain(main_buffer, main_buffer_length);
+		//DrawWaveMain(main_buffer, main_buffer_length);
+		wasCalled = 1;
 	}
 	if (keys & KEY_LEFT) {
 		printf("LEFT\n");
 		DecrementWaveType();
-		DrawWaveMain(main_buffer, main_buffer_length);
+		//DrawWaveMain(main_buffer, main_buffer_length);
+		wasCalled = 1;
 	}
 	if (keys & KEY_RIGHT) {
 		printf("RIGHT\n");
 		IncrementWaveType();
-		DrawWaveMain(main_buffer, main_buffer_length);
+		//DrawWaveMain(main_buffer, main_buffer_length);
+		wasCalled = 1;
 	}
 
 	// keys = ~(REG_KEYXY);
@@ -111,6 +120,47 @@ int main(void) {
 	DrawWaveMain(main_buffer, main_buffer_length);
 
     while(1){
+
+    	// Old controls wihout interupt
+    			// if(keys == KEY_X) {
+    			// 	IncrementFrequency10();
+    			// 	SetFreqFader(GetFrequency());
+    			// 	printf("Frequency: %d\n", GetFrequency());
+    			// 	DrawWaveMain(main_buffer, main_buffer_length);
+    			// }
+    			// if (keys == KEY_Y) {
+    			// 	EnableDisableMuter();
+    			// }
+    			// if (keys == KEY_A) {
+    			// 	PauseResumeSound();
+    			// 	printf("Playing: %d\n", IsPlaying());
+    			// }
+    			// if(keys == KEY_B) {
+    			// 	DecrementFrequency10();
+    			// 	SetFreqFader(GetFrequency());
+    			// 	printf("Frequency: %d\n", GetFrequency());
+    			// 	DrawWaveMain(main_buffer, main_buffer_length);
+    			// }
+    			// if(keys == KEY_START) {
+    			// 	IncrementWaveType();
+    			// 	printf("Wave type: %d\n", GetWaveType());
+    			// 	DrawWaveMain(main_buffer, main_buffer_length);
+    			// }
+    			// if(keys == KEY_RIGHT) {
+    			// 	DrawWaveMain(main_buffer, main_buffer_length);
+    			// }
+    			// if(keys == KEY_LEFT) {
+    			// 	DrawWaveMain(main_buffer, main_buffer_length);
+    			// }
+    			// if(keys == KEY_UP) {
+    			// 	ZoomIn();
+    			// 	DrawWaveMain(main_buffer, main_buffer_length);
+    			// }
+    			// if(keys == KEY_DOWN) {
+    			// 	ZoomOut();
+    			// 	DrawWaveMain(main_buffer, main_buffer_length);
+    			// }
+
     	scanKeys();
 		unsigned keys = keysDown();
 
@@ -125,47 +175,8 @@ int main(void) {
 			EnableDisableMuter();
 		}
 
-		// Old controls wihout interupt 
-		// if(keys == KEY_X) {
-		// 	IncrementFrequency10();
-		// 	SetFreqFader(GetFrequency());
-		// 	printf("Frequency: %d\n", GetFrequency());
-		// 	DrawWaveMain(main_buffer, main_buffer_length);
-		// }
-		// if (keys == KEY_Y) {
-		// 	EnableDisableMuter();
-		// }
-		// if (keys == KEY_A) {
-		// 	PauseResumeSound();
-		// 	printf("Playing: %d\n", IsPlaying());
-		// }
-		// if(keys == KEY_B) {
-		// 	DecrementFrequency10();
-		// 	SetFreqFader(GetFrequency());
-		// 	printf("Frequency: %d\n", GetFrequency());
-		// 	DrawWaveMain(main_buffer, main_buffer_length);
-		// }
-		// if(keys == KEY_START) {
-		// 	IncrementWaveType();
-		// 	printf("Wave type: %d\n", GetWaveType());
-		// 	DrawWaveMain(main_buffer, main_buffer_length);
-		// }
-		// if(keys == KEY_RIGHT) {
-		// 	DrawWaveMain(main_buffer, main_buffer_length);
-		// }
-		// if(keys == KEY_LEFT) {
-		// 	DrawWaveMain(main_buffer, main_buffer_length);
-		// }
-		// if(keys == KEY_UP) {
-		// 	ZoomIn();
-		// 	DrawWaveMain(main_buffer, main_buffer_length);
-		// }
-		// if(keys == KEY_DOWN) {
-		// 	ZoomOut();
-		// 	DrawWaveMain(main_buffer, main_buffer_length);
-		// }
-
 		// Touch screen
+		scanKeys();
 		keys = keysHeld();
 		if (keys & KEY_TOUCH) {
 			touchPosition touch;
@@ -209,6 +220,17 @@ int main(void) {
 				}
 			}
 		}
+		if(wasCalled){
+			irqDisable(IRQ_KEYS);
+			irqDisable(IRQ_TIMER1);
+			DrawWaveMain(main_buffer, main_buffer_length);
+			wasCalled = 0;
+			irqEnable(IRQ_KEYS);
+			irqEnable(IRQ_TIMER1);
+
+		}
+
+
 		swiWaitForVBlank();
     }
 }
