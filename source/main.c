@@ -11,7 +11,7 @@
 #include "sound.h"
 #include "main_screen.h"
 #include "sub_screen.h" // Mystique 1
-#include "timer.h"
+#include "timer_muter.h"
 
 // Uncomment the following line to enable debug mode
 //#define DEBUG
@@ -31,7 +31,7 @@ int phase_fader_start = 56; // Start of the phase fader in pixels
 
 int main(void) {
 
-	irgInit(); // Initialize the interrupts
+
 
 	InitSound(); // Initialize the sound system
 	#ifdef DEBUG
@@ -40,6 +40,8 @@ int main(void) {
 
 	InitMainScreen();
 	InitSubScreen();
+	//irqInit(); CASSE TOUT...
+	InitTimer();
 
 	#ifdef DEBUG
 		consoleDemoInit();

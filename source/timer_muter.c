@@ -19,11 +19,11 @@ void InitTimer() {
 
     // Timer 0 setup
     TIMER_CR(0) = TIMER_ENABLE | TIMER_DIV_1024 | TIMER_IRQ_REQ;
-    TIMER0_DATA(0) = TIMER_FREQ_1024(muter_interval);
+    TIMER_DATA(0) = TIMER_FREQ_1024(muter_interval);
 
     // Interupt setup
     irqSet(IRQ_TIMER0, Timer0_ISR);
-    irgEnable(IRQ_TIMER0);
+    irqEnable(IRQ_TIMER0);
 }
 
 void SetMuteInterval(int interval) {
