@@ -1,14 +1,12 @@
 nécessaire:
 
-réparer white noise : OK
+axes mieux : tiles lettre + fonction temps
 
-axes mieux : tiles lettre 
+Améliorer le muter
 
-bouton mute selection de waves
+réparer le white noise à 20 hz wtf la street
 
-Mettre un timer quelque part : automatiser le mute (tremolo)
-
-PASSER LES BOUTONS EN INTERRUPT (PAS DE POLLING) !!!!!!!!!! 
+boutons écrans bas
 
 Wifi 
 

@@ -100,7 +100,7 @@ int main(void) {
 	irqSet(IRQ_KEYS, &keys_ISR);
 	irqEnable(IRQ_KEYS);
 
-	//InitTimer();
+	InitTimer();
 
 	#ifdef DEBUG
 		consoleDemoInit();
@@ -122,7 +122,7 @@ int main(void) {
 		}
 		if (keys == KEY_Y) {
 			printf("Y\n");
-			//EnableDisableMuter();
+			EnableDisableMuter();
 		}
 
 		// Old controls wihout interupt 

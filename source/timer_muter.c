@@ -3,8 +3,9 @@
 int muter_interval;
 int muter_enabled;
 
-void Timer0_ISR() {
+void Timer1_ISR() {
     if (muter_enabled) {
+        printf("MUTER");
         // Mute the sound
         PauseResumeSound();
     }
@@ -18,12 +19,12 @@ void InitTimer() {
     muter_enabled = 0;
 
     // Timer 0 setup
-    TIMER_CR(0) = TIMER_ENABLE | TIMER_DIV_1024 | TIMER_IRQ_REQ;
-    TIMER_DATA(0) = TIMER_FREQ_1024(muter_interval);
+    TIMER_CR(1) = TIMER_ENABLE | TIMER_DIV_1024 | TIMER_IRQ_REQ;
+    TIMER_DATA(1) = TIMER_FREQ_1024(muter_interval);
 
     // Interupt setup
-    irqSet(IRQ_TIMER0, Timer0_ISR);
-    irqEnable(IRQ_TIMER0);
+    irqSet(IRQ_TIMER1, Timer1_ISR);
+    irqEnable(IRQ_TIMER1);
 }
 
 void SetMuteInterval(int interval) {
