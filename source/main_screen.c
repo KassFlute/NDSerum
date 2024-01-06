@@ -5,7 +5,7 @@
 #include "sound.h"
 
 #define VERTICALRANGE 171
-#define GENERALOFFSET 10
+#define GENERALOFFSET 9
 
 int actualZoom = 1;
 
