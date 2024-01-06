@@ -41,7 +41,7 @@ int main(void) {
 	InitMainScreen();
 	InitSubScreen();
 	//irqInit(); CASSE TOUT...
-	InitTimer();
+	//InitTimer();
 
 	#ifdef DEBUG
 		consoleDemoInit();
