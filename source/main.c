@@ -29,10 +29,64 @@ int freq_fader_start = 8; // Start of the volume fader in pixels
 int amp_fader_start = 32; // Start of the amplitude fader in pixels
 int phase_fader_start = 56; // Start of the phase fader in pixels
 
+void keys_ISR() {
+	printf("Interrupt\n");
+	u16 keys = ~(REG_KEYINPUT);
+	if (keys & KEY_A) {
+		printf("A\n");
+		PauseResumeSound();
+	}
+	if (keys & KEY_B) {
+		printf("B\n");
+		DecrementFrequency();
+		SetFreqFader(GetFrequency());
+		DrawWaveMain(main_buffer, main_buffer_length);
+	}
+	if (keys & KEY_L) {
+		printf("L\n");
+		DecrementPhase10();
+		SetPhaseFader(GetPhase());
+		DrawWaveMain(main_buffer, main_buffer_length);
+	}
+	if (keys & KEY_R) {
+		printf("R\n");
+		IncrementPhase10();
+		SetPhaseFader(GetPhase());
+		DrawWaveMain(main_buffer, main_buffer_length);
+	}
+	if (keys & KEY_UP) {
+		printf("UP\n");
+		ZoomIn();
+		DrawWaveMain(main_buffer, main_buffer_length);
+	}
+	if (keys & KEY_DOWN) {
+		printf("DOWN\n");
+		ZoomOut();
+		DrawWaveMain(main_buffer, main_buffer_length);
+	}
+	if (keys & KEY_LEFT) {
+		printf("LEFT\n");
+		DecrementWaveType();
+		DrawWaveMain(main_buffer, main_buffer_length);
+	}
+	if (keys & KEY_RIGHT) {
+		printf("RIGHT\n");
+		IncrementWaveType();
+		DrawWaveMain(main_buffer, main_buffer_length);
+	}
+
+	// keys = ~(REG_KEYXY);
+	// if (keys & KEY_X)
+	// {
+	// 	printf("X\n");
+	// }
+	// if (keys & KEY_Y)
+	// {
+	// 	printf("Y\n");
+	// }
+}
+
 int main(void) {
-
-
-
 	InitSound(); // Initialize the sound system
 	#ifdef DEBUG
 		printf("Sound system initialized.\n");
@@ -40,7 +94,12 @@ int main(void) {
 
 	InitMainScreen();
 	InitSubScreen();
-	//irqInit(); CASSE TOUT...
+
+	//irqInit();
+	REG_KEYCNT = (1 << 14) | KEY_A | KEY_B | KEY_X | KEY_Y | KEY_L | KEY_R | KEY_RIGHT | KEY_LEFT | KEY_UP | KEY_DOWN;
+	irqSet(IRQ_KEYS, &keys_ISR);
+	irqEnable(IRQ_KEYS);
+
 	//InitTimer();
 
 	#ifdef DEBUG
@@ -49,52 +108,62 @@ int main(void) {
 		printf("Debug mode is on.\n");
 	#endif
 
-
-	REG_KEYCNT = (1<<14) | KEY_UP | KEY_DOWN | KEY_START | KEY_A;
-
 	DrawWaveMain(main_buffer, main_buffer_length);
 
     while(1){
     	scanKeys();
 		unsigned keys = keysDown();
-		if(keys == KEY_X) {
-			IncrementFrequency10();
+
+		if (keys == KEY_X) {
+			printf("X\n");
+			IncrementFrequency();
 			SetFreqFader(GetFrequency());
-			printf("Frequency: %d\n", GetFrequency());
 			DrawWaveMain(main_buffer, main_buffer_length);
 		}
 		if (keys == KEY_Y) {
-			EnableDisableMuter();
+			printf("Y\n");
+			//EnableDisableMuter();
 		}
-		if (keys == KEY_A) {
-			PauseResumeSound();
-			printf("Playing: %d\n", IsPlaying());
-		}
-		if(keys == KEY_B) {
-			DecrementFrequency10();
-			SetFreqFader(GetFrequency());
-			printf("Frequency: %d\n", GetFrequency());
-			DrawWaveMain(main_buffer, main_buffer_length);
-		}
-		if(keys == KEY_START) {
-			IncrementWaveType();
-			printf("Wave type: %d\n", GetWaveType());
-			DrawWaveMain(main_buffer, main_buffer_length);
-		}
-		if(keys == KEY_RIGHT) {
-			DrawWaveMain(main_buffer, main_buffer_length);
-		}
-		if(keys == KEY_LEFT) {
-			DrawWaveMain(main_buffer, main_buffer_length);
-		}
-		if(keys == KEY_UP) {
-			ZoomIn();
-			DrawWaveMain(main_buffer, main_buffer_length);
-		}
-		if(keys == KEY_DOWN) {
-			ZoomOut();
-			DrawWaveMain(main_buffer, main_buffer_length);
-		}
+
+		// Old controls wihout interupt 
+		// if(keys == KEY_X) {
+		// 	IncrementFrequency10();
+		// 	SetFreqFader(GetFrequency());
+		// 	printf("Frequency: %d\n", GetFrequency());
+		// 	DrawWaveMain(main_buffer, main_buffer_length);
+		// }
+		// if (keys == KEY_Y) {
+		// 	EnableDisableMuter();
+		// }
+		// if (keys == KEY_A) {
+		// 	PauseResumeSound();
+		// 	printf("Playing: %d\n", IsPlaying());
+		// }
+		// if(keys == KEY_B) {
+		// 	DecrementFrequency10();
+		// 	SetFreqFader(GetFrequency());
+		// 	printf("Frequency: %d\n", GetFrequency());
+		// 	DrawWaveMain(main_buffer, main_buffer_length);
+		// }
+		// if(keys == KEY_START) {
+		// 	IncrementWaveType();
+		// 	printf("Wave type: %d\n", GetWaveType());
+		// 	DrawWaveMain(main_buffer, main_buffer_length);
+		// }
+		// if(keys == KEY_RIGHT) {
+		// 	DrawWaveMain(main_buffer, main_buffer_length);
+		// }
+		// if(keys == KEY_LEFT) {
+		// 	DrawWaveMain(main_buffer, main_buffer_length);
+		// }
+		// if(keys == KEY_UP) {
+		// 	ZoomIn();
+		// 	DrawWaveMain(main_buffer, main_buffer_length);
+		// }
+		// if(keys == KEY_DOWN) {
+		// 	ZoomOut();
+		// 	DrawWaveMain(main_buffer, main_buffer_length);
+		// }
 
 		// Touch screen
 		keys = keysHeld();

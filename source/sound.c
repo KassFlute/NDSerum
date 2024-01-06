@@ -3,9 +3,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#define MAX(a, b) (((a) > (b)) ? (a) : (b))
-#define MIN(a, b) (((a) < (b)) ? (a) : (b))
-
 WaveType currentWaveType; 			 // Actual wave type
 int actualFrequency;				 // Actual frequency of the sound
 float actualAmplitude;				 // Actual amplitude of the sound
@@ -47,7 +44,7 @@ void InitSound() {
 
 	// Set the sound system parameters
 	actualFrequency = 35;
-	actualAmplitude = 1;
+	actualAmplitude = 0.11;
 	actualPhase = 0;
 	currentWaveType = SAW_WAVE;
 	isPlaying = 1;
@@ -153,8 +150,22 @@ void SetFrequency(int newFrequency) {
 	 * @param newFrequency : the new frequency of the wave
 	 */
 
-	actualFrequency = MAX(MIN(newFrequency, 20000), 20);
+	actualFrequency = MAX(MIN(newFrequency, MAXFREQ), MINFREQ);
 	FillBuffer();
+}
+
+void IncrementFrequency() {
+	/*
+	 * Increment the frequency of the wave by 1
+	 */
+	SetFrequency(actualFrequency + 1);
+}
+
+void DecrementFrequency() {
+	/*
+	 * Decrement the frequency of the wave by 1
+	 */
+	SetFrequency(actualFrequency - 1);
 }
 
 void IncrementFrequency10() {
@@ -201,8 +212,22 @@ void SetPhase(int newPhase) {
 	 * Set the phase of the wave
 	 * @param newPhase : the new phase of the wave
 	 */
-	actualPhase = newPhase;
+	actualPhase = MAX(MIN(newPhase, 360), 0);
 	FillBuffer();
+}
+
+void IncrementPhase10() {
+	/*
+	 * Increment the phase of the wave by 10
+	 */
+	SetPhase(actualPhase + 10);
+}
+
+void DecrementPhase10() {
+	/*
+	 * Decrement the phase of the wave by 10
+	 */
+	SetPhase(actualPhase - 10);
 }
 
 int GetPhase() {
@@ -227,6 +252,18 @@ void IncrementWaveType(){
 	 * Increment the type of the wave
 	 */
 	currentWaveType = (currentWaveType + 1) % waveTypeCount;
+	FillBuffer();
+}
+
+void DecrementWaveType(){
+	/*
+	 * Decrement the type of the wave
+	 */
+	if (currentWaveType == 0) {
+		currentWaveType = waveTypeCount - 1;
+	} else {
+		currentWaveType -= 1;
+	}
 	FillBuffer();
 }
 

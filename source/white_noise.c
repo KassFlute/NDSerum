@@ -15,6 +15,5 @@ void WhiteNoiseFill(int16_t* array, int frequency, float amplitude, int phase, i
 			short randomShort = rand() % MAXVALUE*2 - MAXVALUE; // Generate a random short
 			array[i] = (short) (amplitude * randomShort); // Add the random short to the array
 		}
-
 	*length = sampleNumber;
 }
