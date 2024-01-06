@@ -1,21 +1,36 @@
 nécessaire:
-tiles de numéro main screen : OK
-axes mieux
-plus de metrics main screen : OK
-unitées metrics : OK
 
-Fader volume : OK
-Fader autres trucs rigolo : OK
-background sub : OK
 
-moins lager : PLUS OU MOINS
+axes mieux : tiles lettre 
 
-Mettre un timer quelque part
+background sub : bouton mute selection de waves
 
-PASSER LES BOUTONS EN INTERRUPT (PAS DE POLLING)
+Mettre un timer quelque part : automatiser le mute (tremolo)
+
+PASSER LES BOUTONS EN INTERRUPT (PAS DE POLLING) !!!!!!!!!! 
+
+Wifi 
+
+Clean tout (commenter les points h)
+
+WoperPoint
+
+
+UP: more periods
+DOWN : less periods
+
+L: phase plus
+R: phase moins
+
+A: MUTE
+
+LEFT/RIGHT: wave selection 
+
+X: frequency ++
+
+B: frequency -- 
+
 
 bonus:
-Le zoom qui affiche par défaut que une période.
-afficher des valeurs numérique en haut.
-l'écran du bas peut aussi servir à dessiner une wave custom.
-les ds sur le même reseau wifi produisent la même onde (truc de zozo)
+
+l'écran du bas peut aussi servir à dessiner une wave custom. (zeubi)

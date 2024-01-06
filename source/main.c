@@ -74,11 +74,9 @@ int main(void) {
 			DrawWaveMain(main_buffer, main_buffer_length);
 		}
 		if(keys == KEY_RIGHT) {
-			MoveRight();
 			DrawWaveMain(main_buffer, main_buffer_length);
 		}
 		if(keys == KEY_LEFT) {
-			MoveLeft();
 			DrawWaveMain(main_buffer, main_buffer_length);
 		}
 		if(keys == KEY_UP) {
@@ -96,6 +94,7 @@ int main(void) {
 			touchPosition touch;
 			touchRead(&touch);
 			if (touch.px || touch.py) {
+
 				// Frequency fader
 				if (touch.px >= freq_fader_start && touch.px <= freq_fader_start + fader_width) {
 					printf("Touch: %d, %d\n", touch.px, touch.py);
