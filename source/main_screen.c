@@ -164,6 +164,115 @@ u8 tileHz[64] = {
    9,0,0,9,0,9,9,9
 };
 
+//A
+u8 tileNum14[64] = {
+   0,0,0,0,0,0,0,0,
+   0,0,0,9,9,0,0,0,
+   0,0,9,9,9,9,0,0,
+   0,9,9,0,0,9,9,0,
+   0,9,9,0,0,9,9,0,
+   0,9,9,9,9,9,9,0,
+   0,9,9,0,0,9,9,0,
+   0,9,9,0,0,9,9,0
+};
+
+//E
+u8 tileNum15[64] = {
+   0,0,0,0,0,0,0,0,
+   0,0,9,9,9,9,9,9,
+   0,0,9,9,0,0,0,9,
+   0,0,9,9,0,9,0,0,
+   0,0,9,9,9,9,0,0,
+   0,0,9,9,0,9,0,0,
+   0,0,9,9,0,0,0,9,
+   0,9,9,9,9,9,9,9
+};
+
+//I
+u8 tileNum16[64] = {
+  0,0,0,0,0,0,0,0,
+  9,9,9,9,9,9,9,9,
+  0,0,0,9,9,0,0,0,
+  0,0,0,9,9,0,0,0,
+  0,0,0,9,9,0,0,0,
+  0,0,0,9,9,0,0,0,
+  0,0,0,9,9,0,0,0,
+  0,9,9,9,9,9,9,0
+};
+
+//M
+u8 tileNum17[64] = {
+   0,0,0,0,0,0,0,0,
+   0,9,9,0,0,0,9,9,
+   0,9,9,9,0,9,9,9,
+   0,9,9,9,9,9,9,9,
+   0,9,9,9,9,9,9,9,
+   0,9,9,0,9,0,9,9,
+   0,9,9,0,0,0,9,9,
+   0,9,9,0,0,0,9,9
+};
+
+
+//N
+u8 tileNum18[64] = {
+   0,0,0,0,0,0,0,0,
+   0,9,9,0,0,0,9,9,
+   0,9,9,9,0,0,9,9,
+   0,9,9,9,9,0,9,9,
+   0,9,9,0,9,9,9,9,
+   0,9,9,0,0,9,9,9,
+   0,9,9,0,0,0,9,9,
+   0,9,9,0,0,0,9,9
+};
+
+//P
+u8 tileNum19[64] = {
+   0,0,0,0,0,0,0,0,
+   0,9,9,9,9,9,9,0,
+   0,0,9,9,0,0,9,9,
+   0,0,9,9,0,0,9,9,
+   0,0,9,9,9,9,9,0,
+   0,0,9,9,0,0,0,0,
+   0,0,9,9,0,0,0,0,
+   0,9,9,9,9,0,0,0
+};
+
+//T
+u8 tileNum20[64] = {
+   0,0,0,0,0,0,0,0,
+   0,9,9,9,9,9,9,0,
+   0,9,0,9,9,0,9,0,
+   0,0,0,9,9,0,0,0,
+   0,0,0,9,9,0,0,0,
+   0,0,0,9,9,0,0,0,
+   0,0,0,9,9,0,0,0,
+   0,0,9,9,9,9,0,0
+};
+
+//X
+u8 tileNum21[64] = {
+   0,0,0,0,0,0,0,0,
+   0,9,9,0,0,0,9,9,
+   0,0,9,9,0,9,9,0,
+   0,0,0,9,9,9,0,0,
+   0,0,0,9,9,9,0,0,
+   0,0,9,9,0,9,9,0,
+   0,9,9,0,0,0,9,9,
+   0,9,9,0,0,0,9,9
+};
+
+u8 tilePlus[64] = {
+   0,0,0,9,9,0,0,0,
+   0,0,0,9,9,0,0,0,
+   0,0,0,9,9,0,0,0,
+   9,9,9,9,9,9,9,9,
+   9,9,9,9,9,9,9,9,
+   0,0,0,9,9,0,0,0,
+   0,0,0,9,9,0,0,0,
+   0,0,0,9,9,0,0,0
+};
+
+
 void InitMainScreen() {
 
 	REG_DISPCNT = MODE_5_2D | DISPLAY_BG2_ACTIVE | DISPLAY_BG3_ACTIVE | DISPLAY_BG0_ACTIVE;
@@ -207,9 +316,18 @@ void InitMainScreen() {
 	dmaCopy(tileNum8, &BG_TILE_RAM(4)[256], 64);
 	dmaCopy(tileNum9, &BG_TILE_RAM(4)[288], 64);
 	dmaCopy(tileNum10, &BG_TILE_RAM(4)[320], 64);
-	dmaCopy(tileDot, &BG_TILE_RAM(4)[352], 64); // 11
+	dmaCopy(tileDot, &BG_TILE_RAM(4)[352], 64); //11
 	dmaCopy(tileDegree, &BG_TILE_RAM(4)[384], 64); // 12
 	dmaCopy(tileHz, &BG_TILE_RAM(4)[416], 64); // 13
+	dmaCopy(tileNum14, &BG_TILE_RAM(4)[448], 64); //A
+	dmaCopy(tileNum15, &BG_TILE_RAM(4)[480], 64);//E
+	dmaCopy(tileNum16, &BG_TILE_RAM(4)[512], 64);//I
+	dmaCopy(tileNum17, &BG_TILE_RAM(4)[544], 64);//M
+	dmaCopy(tileNum18, &BG_TILE_RAM(4)[576], 64);//N
+	dmaCopy(tileNum19, &BG_TILE_RAM(4)[608], 64);//P
+	dmaCopy(tileNum20, &BG_TILE_RAM(4)[640], 64);//T
+	dmaCopy(tileNum21, &BG_TILE_RAM(4)[672], 64);//X
+	dmaCopy(tilePlus, &BG_TILE_RAM(4)[704], 64);//22
 }
 
 void ClearInfoBG() {
@@ -260,11 +378,66 @@ void DrawPhaseMain() {
 }
 
 void DrawTimeScaleMain() {
-	BG_MAP_RAM(24)[32 * 13]= 0;
-	BG_MAP_RAM(24)[32 * 13 + 8]= 0;
+
+	int frequency = GetFrequency();
+
+	double interval = 1 / (double) frequency * 1000;
+
+	int intervalFour = MIN(999,(interval/4.0 ) * actualZoom);
+	int intervalTwo = MIN(999,(interval/2.0 ) * actualZoom);
+
+	if(intervalFour >= 999){
+		BG_MAP_RAM(24)[32 * 13 + 27]= 22;
+		BG_MAP_RAM(24)[32 * 13 + 11]= 22;
+	}
+	if(intervalTwo >= 999){
+			BG_MAP_RAM(24)[32 * 13 + 3]= 22;
+		}
+
+
+	BG_MAP_RAM(24)[32 * 13]= (intervalTwo/100) % 10;;
+	BG_MAP_RAM(24)[32 * 13 + 1]= (intervalTwo/10) % 10;;
+	BG_MAP_RAM(24)[32 * 13 + 2]= intervalTwo % 10;
+
+	BG_MAP_RAM(24)[32 * 13 + 8]= (intervalFour/100) % 10;
+	BG_MAP_RAM(24)[32 * 13 + 9]= (intervalFour/10) % 10;
+	BG_MAP_RAM(24)[32 * 13 + 10]= intervalFour % 10;
+
 	BG_MAP_RAM(24)[32 * 13 + 16]= 0;
-	BG_MAP_RAM(24)[32 * 13 + 24]= 0;
+
+	BG_MAP_RAM(24)[32 * 13 + 24]= (intervalFour/100) % 10;
+	BG_MAP_RAM(24)[32 * 13 + 25]= (intervalFour/10) % 10;
+	BG_MAP_RAM(24)[32 * 13 + 26]= intervalFour % 10;
+
+
 }
+
+void DrawText(){
+
+	//AMP
+	BG_MAP_RAM(24)[17]= 14;
+	BG_MAP_RAM(24)[18]= 17;
+	BG_MAP_RAM(24)[19]= 19;
+
+	//TIME
+	BG_MAP_RAM(24)[10*32 + 28]= 20;
+	BG_MAP_RAM(24)[10*32 + 29]= 16;
+	BG_MAP_RAM(24)[10*32 + 30]= 17;
+	BG_MAP_RAM(24)[10*32 + 31]= 15;
+
+	//MAX
+	BG_MAP_RAM(24)[0*32 +12]= 17;
+	BG_MAP_RAM(24)[0*32 +13]= 14;
+	BG_MAP_RAM(24)[0*32 + 14]= 21;
+
+	//MIN
+	BG_MAP_RAM(24)[23*32 +12]= 17;
+	BG_MAP_RAM(24)[23*32 +13]= 16;
+	BG_MAP_RAM(24)[23*32 + 14]= 18;
+
+}
+
+
 
 void ZoomIn() {
 	actualZoom *= 2;
@@ -291,6 +464,7 @@ void DrawWaveMain(int16_t * main_buffer, int length) {
 	DrawAmplitudeMain();
 	DrawPhaseMain();
 	DrawTimeScaleMain();
+	DrawText();
 
 	//reset to one phase
 	//  Wave draw
