@@ -1,9 +1,14 @@
 nécessaire:
 
 
+
+
+
+réparer white noise
+
 axes mieux : tiles lettre 
 
-background sub : bouton mute selection de waves
+bouton mute selection de waves
 
 Mettre un timer quelque part : automatiser le mute (tremolo)
 
