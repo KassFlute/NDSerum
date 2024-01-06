@@ -9,17 +9,12 @@ void WhiteNoiseFill(int16_t* array, int frequency, float amplitude, int phase, i
 	 * @param frequency : the frequency of the white noise
 	 * @param length : pointer to write the number of samples written in the array
 	*/
-
-	int nPeriod = NPeriodFromFrequency(frequency); // Quentin
-
-	double samplesPerPeriod = SAMPLERATE/ (double) frequency; // Quentin
-
-	int sampleNumber = samplesPerPeriod * nPeriod ; // Quentin
-
-	*length = sampleNumber;
+	int sampleNumber = 4800;
 
 	for(int i = 0 ; i < sampleNumber; i++){
 			short randomShort = rand() % MAXVALUE*2 - MAXVALUE; // Generate a random short
 			array[i] = (short) (amplitude * randomShort); // Add the random short to the array
 		}
+
+	*length = sampleNumber;
 }

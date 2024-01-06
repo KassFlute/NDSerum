@@ -11,6 +11,7 @@
 #include "sound.h"
 #include "main_screen.h"
 #include "sub_screen.h" // Mystique 1
+#include "timer.h"
 
 // Uncomment the following line to enable debug mode
 //#define DEBUG
@@ -29,6 +30,8 @@ int amp_fader_start = 32; // Start of the amplitude fader in pixels
 int phase_fader_start = 56; // Start of the phase fader in pixels
 
 int main(void) {
+
+	irgInit(); // Initialize the interrupts
 
 	InitSound(); // Initialize the sound system
 	#ifdef DEBUG
@@ -57,6 +60,9 @@ int main(void) {
 			SetFreqFader(GetFrequency());
 			printf("Frequency: %d\n", GetFrequency());
 			DrawWaveMain(main_buffer, main_buffer_length);
+		}
+		if (keys == KEY_Y) {
+			EnableDisableMuter();
 		}
 		if (keys == KEY_A) {
 			PauseResumeSound();

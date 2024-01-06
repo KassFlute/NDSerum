@@ -1,10 +1,6 @@
 nécessaire:
 
-
-
-
-
-réparer white noise
+réparer white noise : OK
 
 axes mieux : tiles lettre 
 
