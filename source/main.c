@@ -12,6 +12,7 @@
 #include "main_screen.h"
 #include "sub_screen.h" // Mystique 1
 #include "timer_muter.h"
+#include "wifi_sync.h"
 
 // Uncomment the following line to enable debug mode
 //#define DEBUG
@@ -22,7 +23,8 @@
 int16_t main_buffer[4800]; // main buffer storing the sound (to be copied to the stream buffer)
 int main_buffer_length;	   // main buffer length (in samples)
 
-int sub_screen_mode = 0; // 0 = controls, 1 = drawing
+bool sub_screen_mode = 0; // 0 = controls, 1 = drawing
+bool wifi_enabled = 1;	  // 0 = disabled, 1 = enabled
 
 int freq_fader_start = 8; // Start of the volume fader in pixels
 int amp_fader_start = 32; // Start of the amplitude fader in pixels
@@ -113,6 +115,30 @@ void keys_ISR() {
 	// }
 }
 
+void wifi_receive(){
+	char byte_data_buff[2];
+	if (receiveData(byte_data_buff, 2) > 0) {
+		short data_buff = (byte_data_buff[0] << 8) | byte_data_buff[1];
+		int param_index = (data_buff[0] & 0x8000) >> 15;
+		int param_value = data_buff[0] & 0x7FFF;
+
+		switch (param_index)
+		{
+		case 0:
+			printf("Frequency: %d\n", param_value);
+			break;
+		case 1:
+			printf("Amplitude: %d\n", param_value);
+			break;
+		case 2:
+			printf("Phase: %d\n", param_value);
+			break;
+		default:
+			break;
+		}
+	}
+}
+
 int main(void) {
 	InitSound(); // Initialize the sound system
 	#ifdef DEBUG
@@ -123,6 +149,9 @@ int main(void) {
 
 	InitMainScreen();
 	InitSubScreen();
+
+	initWiFi();
+	openSocket();
 
 	//irqInit();
 	REG_KEYCNT = (1 << 14) | KEY_A | KEY_B | KEY_X | KEY_Y | KEY_L | KEY_R | KEY_RIGHT | KEY_LEFT | KEY_UP | KEY_DOWN;
@@ -138,47 +167,6 @@ int main(void) {
 	DrawWaveMain(main_buffer, main_buffer_length);
 
     while(1){
-
-    	// Old controls wihout interupt
-    			// if(keys == KEY_X) {
-    			// 	IncrementFrequency10();
-    			// 	SetFreqFader(GetFrequency());
-    			// 	printf("Frequency: %d\n", GetFrequency());
-    			// 	DrawWaveMain(main_buffer, main_buffer_length);
-    			// }
-    			// if (keys == KEY_Y) {
-    			// 	EnableDisableMuter();
-    			// }
-    			// if (keys == KEY_A) {
-    			// 	PauseResumeSound();
-    			// 	printf("Playing: %d\n", IsPlaying());
-    			// }
-    			// if(keys == KEY_B) {
-    			// 	DecrementFrequency10();
-    			// 	SetFreqFader(GetFrequency());
-    			// 	printf("Frequency: %d\n", GetFrequency());
-    			// 	DrawWaveMain(main_buffer, main_buffer_length);
-    			// }
-    			// if(keys == KEY_START) {
-    			// 	IncrementWaveType();
-    			// 	printf("Wave type: %d\n", GetWaveType());
-    			// 	DrawWaveMain(main_buffer, main_buffer_length);
-    			// }
-    			// if(keys == KEY_RIGHT) {
-    			// 	DrawWaveMain(main_buffer, main_buffer_length);
-    			// }
-    			// if(keys == KEY_LEFT) {
-    			// 	DrawWaveMain(main_buffer, main_buffer_length);
-    			// }
-    			// if(keys == KEY_UP) {
-    			// 	ZoomIn();
-    			// 	DrawWaveMain(main_buffer, main_buffer_length);
-    			// }
-    			// if(keys == KEY_DOWN) {
-    			// 	ZoomOut();
-    			// 	DrawWaveMain(main_buffer, main_buffer_length);
-    			// }
-
     	scanKeys();
 		unsigned keys = keysDown();
 		// X and Y pressed one time
@@ -287,6 +275,13 @@ int main(void) {
 				}
 			}
 		}
+
+		// Wifi receive
+		if (wifi_enabled) {
+			wifi_receive();
+		}
+
+		// Main screen update for interrupts
 		if(wasCalled){
 			irqDisable(IRQ_KEYS);
 			irqDisable(IRQ_TIMER1);
@@ -296,7 +291,6 @@ int main(void) {
 			irqEnable(IRQ_TIMER1);
 
 		}
-
 
 		swiWaitForVBlank();
     }
