@@ -24,7 +24,7 @@ int16_t main_buffer[4800]; // main buffer storing the sound (to be copied to the
 int main_buffer_length;	   // main buffer length (in samples)
 
 bool sub_screen_mode = 0; // 0 = controls, 1 = drawing
-bool wifi_enabled = 1;	  // 0 = disabled, 1 = enabled
+bool wifi_enabled = 0;	  // 0 = disabled, 1 = enabled
 
 int freq_fader_start = 8; // Start of the volume fader in pixels
 int amp_fader_start = 32; // Start of the amplitude fader in pixels
@@ -103,6 +103,19 @@ void keys_ISR() {
 		//DrawWaveMain(main_buffer, main_buffer_length);
 		wasCalled = 1;
 	}
+	if (keys & KEY_START) {
+		printf("START\n");
+		if (!wifi_enabled) {
+			initWiFi();
+			openSocket();
+			wifi_enabled = 1;
+		}
+		else {
+			closeSocket();
+			disconnectFromWiFi();
+			wifi_enabled = 0;
+		}
+	}
 
 	// keys = ~(REG_KEYXY);
 	// if (keys & KEY_X)
@@ -116,27 +129,27 @@ void keys_ISR() {
 }
 
 void wifi_receive(){
-	char byte_data_buff[2];
-	if (receiveData(byte_data_buff, 2) > 0) {
-		short data_buff = (byte_data_buff[0] << 8) | byte_data_buff[1];
-		int param_index = (data_buff[0] & 0x8000) >> 15;
-		int param_value = data_buff[0] & 0x7FFF;
+	// char byte_data_buff[2];
+	// if (receiveData(byte_data_buff, 2) > 0) {
+	// 	short data_buff = (byte_data_buff[0] << 8) | byte_data_buff[1];
+	// 	int param_index = (data_buff[0] & 0xC000) >> 14;
+	// 	int param_value = data_buff[0] & 0x3FFF;
 
-		switch (param_index)
-		{
-		case 0:
-			printf("Frequency: %d\n", param_value);
-			break;
-		case 1:
-			printf("Amplitude: %d\n", param_value);
-			break;
-		case 2:
-			printf("Phase: %d\n", param_value);
-			break;
-		default:
-			break;
-		}
-	}
+	// 	switch (param_index)
+	// 	{
+	// 	case 0:
+	// 		printf("Frequency: %d\n", param_value);
+	// 		break;
+	// 	case 1:
+	// 		printf("Amplitude: %d\n", param_value);
+	// 		break;
+	// 	case 2:
+	// 		printf("Phase: %d\n", param_value);
+	// 		break;
+	// 	default:
+	// 		break;
+	// 	}
+	// }
 }
 
 int main(void) {
@@ -150,11 +163,8 @@ int main(void) {
 	InitMainScreen();
 	InitSubScreen();
 
-	initWiFi();
-	openSocket();
-
 	//irqInit();
-	REG_KEYCNT = (1 << 14) | KEY_A | KEY_B | KEY_X | KEY_Y | KEY_L | KEY_R | KEY_RIGHT | KEY_LEFT | KEY_UP | KEY_DOWN;
+	REG_KEYCNT = (1 << 14) | KEY_A | KEY_B | KEY_X | KEY_Y | KEY_L | KEY_R | KEY_RIGHT | KEY_LEFT | KEY_UP | KEY_DOWN | KEY_START;
 	irqSet(IRQ_KEYS, &keys_ISR);
 	irqEnable(IRQ_KEYS);
 

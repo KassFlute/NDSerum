@@ -25,6 +25,10 @@ int is_gated = 0; // 0 = not gated, 1 = gated
 int x_gate_fader = 24; // Static fader position
 int y_gate_fader = 12; // Dynamic fader position
 
+int x_wifi_button = 23; // Static wifi status position
+int y_wifi_button = 15; // Static wifi status position
+bool wifi_button_enable = 1; // 0 = disabled, 1 = enabled
+
 //Tile #0 (transparent tile)
 u8 tile0[64] = {
    0,0,0,0,0,0,0,0,
@@ -155,6 +159,18 @@ u8 tile10[64] = {
     0,0,0,0,0,0,0,201,
     0,0,0,0,0,0,0,201,
     201,201,201,201,201,201,201,201
+};
+
+// Tile #11 (red dot tile)
+u8 tile11[64] = {
+    0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,
+    0,0,0,201,201,0,0,0,
+    0,0,0,201,201,0,0,0,
+    0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0
 };
 
 void InitSubScreen() {
@@ -411,4 +427,34 @@ void SetGateFader(int gate_speed) {
      */
     y_gate_fader = (11 - (gate_speed / 8)) + 1; // Transform gate speed that goes from 0 to 96 to fader position (in tile) that goes from 12 to 1
     DrawGateFader();
+}
+
+void DrawWifiButton() {
+    /*
+     * Draw the wifi button
+     */
+    if (wifi_button_enable) {
+        // Draw the red highlight
+        for (int x = x_wifi_button; x < x_wifi_button+3; x += 1) {
+            for (int y = y_wifi_button; y < y_wifi_button+3; y += 1) {
+                BG_MAP_RAM_SUB(1)[32 * y + x] = 2 + 3 * (y - y_wifi_button) + (x - x_wifi_button);
+            }
+        }
+    } else {
+        // Erase the previous red highlight
+        for(int x=x_wifi_button; x<x_wifi_button+3; x+=1) {
+            for(int y=y_wifi_button; y<=y_wifi_button+3; y+=1) {
+                BG_MAP_RAM_SUB(1)[32*y + x] = 0;
+            }
+        }
+    }
+}
+
+void SetWifiStatus(int enabled) {
+    /*
+     * Set the position of the wifi status
+     * @param enabled : the new state of the wifi
+     */
+    wifi_button_enable = enabled ? 1 : 0;
+    DrawWifiButton();
 }
