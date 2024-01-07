@@ -107,23 +107,4 @@ void set_sync_enabled(int enabled) {
     } else {
         sync_enabled = 0;
     }
-
-    // if (wifi_enabled){
-    //     // closeSocket();
-    //     // disconnectFromWiFi();
-    //     printf("WiFi disabled.\n");
-    //     wifi_enabled = 0;
-    // } else {
-    //     printf("Initializing WiFi...\n");
-    //     if (initWiFi()) {
-    //         if (openSocket()) {
-    //             printf("Wifi initilaized");
-    //             wifi_enabled = 1;
-    //         } else {
-    //             wifi_enabled = 0;
-    //         }
-    //     } else {
-    //         wifi_enabled = 0;
-    //     }
-    // }
 }

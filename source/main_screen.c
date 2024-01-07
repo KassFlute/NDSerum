@@ -518,7 +518,7 @@ void DrawWaveMain(int16_t * main_buffer, int length) {
 		for(int i = 0; i< length * actualZoom ; i++){
 
 			int x = ((i / (double) length ) * 256) / actualZoom;
-
+         
 			int y = ((main_buffer[i%length] + MAXVALUE) / ((double)2*MAXVALUE)) * VERTICALRANGE;
 
 			BG_BMP_RAM(5)[x + 256 * (VERTICALRANGE-y + GENERALOFFSET)] = yellow;
