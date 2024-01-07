@@ -20,8 +20,7 @@
 #define MAXFREQ 1000 // Maximum frequency of the wave
 #define MINFREQ 20 // Minimum frequency of the wave
 
-typedef enum
-{
+typedef enum {
     SAW_WAVE,
     SIN_WAVE,
     WHITE_NOISE,
@@ -54,6 +53,8 @@ void SetAmplitude(float newAmplitude);
 float GetAmplitude();
 
 void SetPhase(int newPhase);
+void IncrementPhase();
+void DecrementPhase();
 void IncrementPhase10();
 void DecrementPhase10();
 int GetPhase();

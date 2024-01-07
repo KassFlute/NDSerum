@@ -10,6 +10,8 @@ int actualPhase;					 // Actual phase of the sound
 int isPlaying;						 // Is the sound playing
 int actualArrayIndex;				 // Index of the buffer being written
 
+mm_stream *myStream;				 // The audio stream
+
 
 // Maxmod callback for the audio stream buffer filling
 mm_word OnStreamRequest(mm_word length, mm_addr dest, mm_stream_formats format) {
@@ -18,6 +20,7 @@ mm_word OnStreamRequest(mm_word length, mm_addr dest, mm_stream_formats format) 
 
 	if (!isPlaying) {
 		memset(dest, 0, amount*4);
+		actualArrayIndex = (actualArrayIndex + amount) % main_buffer_length;
 		return length;
 	}
 
@@ -28,10 +31,9 @@ mm_word OnStreamRequest(mm_word length, mm_addr dest, mm_stream_formats format) 
 		// Deux à la suite parce que stereo earrape sur la nds
 		*target++ = main_buffer[actualArrayIndex];
 		*target++ = main_buffer[actualArrayIndex];
-
 		actualArrayIndex = (actualArrayIndex + 1) % main_buffer_length;
-
 	}
+
 	return length;
 }
 
@@ -57,7 +59,7 @@ void InitSound() {
 	sys.fifo_channel = FIFO_MAXMOD;
 	mmInit(&sys);
 
-	mm_stream *myStream = malloc(sizeof(mm_stream));
+	myStream = malloc(sizeof(mm_stream));
 	myStream->sampling_rate = SAMPLERATE;
 	myStream->buffer_length = BUFFERLENGTH;
 	myStream->callback = OnStreamRequest;
@@ -95,6 +97,7 @@ void FillBuffer() {
 	 * @param main_buffer_length : pointer to the number of sample the buffer will be filled with
 	 */
 
+	//memset(main_buffer, 0, 4800 * sizeof(int16_t));
 	actualArrayIndex = 0;
 
 	switch (currentWaveType)
@@ -214,6 +217,20 @@ void SetPhase(int newPhase) {
 	 */
 	actualPhase = MAX(MIN(newPhase, 360), 0);
 	FillBuffer();
+}
+
+void IncrementPhase() {
+	/*
+	 * Increment the phase of the wave by 1
+	 */
+	SetPhase(actualPhase + 1);
+}
+
+void DecrementPhase() {
+	/*
+	 * Decrement the phase of the wave by 1
+	 */
+	SetPhase(actualPhase - 1);
 }
 
 void IncrementPhase10() {

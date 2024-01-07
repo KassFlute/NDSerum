@@ -44,6 +44,22 @@ void EnableDisableMuter() {
     }
 }
 
+void SetGate(int enabled) {
+    /*
+        * Enable or disable the gate
+        * @param enabled : 1 to enable the gate, 0 to disable it
+     */
+    if (enabled) {
+        // Enable the gate
+        muter_enabled = 1;
+    } else {
+        // Disable the gate
+        muter_enabled = 0;
+        PauseSound();
+        SetMuteButton(1);
+    }
+}
+
 void SetGateSpeed(int speed) {
     /*
         * Set the speed of the gate

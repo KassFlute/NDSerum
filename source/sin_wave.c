@@ -12,7 +12,7 @@ void SinFill(int16_t *array, int frequency, float amplitude, int phase, int *len
     double samplesPerPeriod = SAMPLERATE / (double) frequency;
     int sampleNumber = samplesPerPeriod * nPeriod;
 
-    double angleStep = (double) 360 * nPeriod / sampleNumber ;
+    double angleStep = (double) 360 * nPeriod / sampleNumber;
     double angleOffset = (double) 360 * phase / 360;
     double x = -angleOffset;
 
@@ -23,6 +23,5 @@ void SinFill(int16_t *array, int frequency, float amplitude, int phase, int *len
         short sample = (short) (range * sin( M_PI * x / (double)180));
         array[i] = sample;
     }
-    
     *length = sampleNumber;
 }

@@ -1,22 +1,12 @@
-#ifndef WIFI_MINILIB_H
-#define WIFI_MINILIB_H
+#include "WiFi_minilib.h"
+#include "sound.h"
 
-#include <nds.h>
-#include <dswifi9.h>
-//#include <dswifi7.h>
-#include <sys/types.h>
-#include <netinet/in.h>
-#include <sys/socket.h>
-
-int initWiFi();
-int openSocket();
-int receiveData(char *data_buff, int bytes);
-int sendData(char *data_buff, int bytes);
-void closeSocket();
-void disconnectFromWiFi();
 void send_freq(int freq);
 void send_amp(float amp);
 void send_phase(int phase);
+void send_wave(WaveType wave);
+void send_mute(int mute);
+void send_gate(int gate);
+void send_gate_speed(int gate_speed);
 int is_wifi_enabled();
 void set_wifi_enabled(int enabled);
-#endif //  WIFI_MINILIB_H

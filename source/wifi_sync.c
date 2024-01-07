@@ -1,199 +1,129 @@
 #include "wifi_sync.h"
 
-#define SSID "NDSERUM"
+int wifi_enabled = 0; // 0 = disabled, 1 = enabled
+int sync_enabled = 0; // 0 = disabled, 1 = enabled
 
-// Socket port
-#define LOCAL_PORT 8888
-#define OUT_PORT 8888
+union DataUnion {
+    float f;
+    int i;
+    WaveType w;
+    unsigned char bytes[4];
+}; // Type capable of storing multiple types of data in the same variable
 
-bool wifi_enabled = 0; // 0 = disabled, 1 = enabled
+void send_freq(int freq) {
+    union DataUnion freq_union;
+    freq_union.i = freq;
 
-// Socket i/o configuration
-struct sockaddr_in sa_out, sa_in;
-int socket_id;
-
-// Flags indicating whether the WiFi or the
-// socket has been initialized
-bool socket_opened = false;
-bool WiFi_initialized = false;
-
-int initWiFi() {
-    // If WiFi already initialized return 0 (error)
-    if (WiFi_initialized == true)
-        return 0;
-
-    // Access point information structure
-    Wifi_AccessPoint ap;
-
-    // Indicates if the access point has been found
-    int found = 0, count = 0, i = 0;
-
-    // Initialize --WI-FI by default (without WFC)
-    Wifi_InitDefault(false);
-
-    // Set scan mode to find APs
-    Wifi_ScanMode();
-
-    // While the AP is not available, loop
-    while (found == 0) {
-        // Get visible APs and check their SSID with our predefined one
-        count = Wifi_GetNumAP();
-        for (i = 0; (i < count) && (found == 0); i++) {
-            Wifi_GetAPData(i, &ap);
-            printf("AP: %s\n", ap.ssid);
-            if (strcmp(SSID, ap.ssid) == 0)
-            printf("Found AP: %s\n", ap.ssid);
-                found = 1; // Our predifined AP has been found
-        }
-    }
-
-    // Use DHCP to get an IP on the network and conect to the AP
-    Wifi_SetIP(0, 0, 0, 0, 0);
-    Wifi_ConnectAP(&ap, WEPMODE_NONE, 0, 0);
-
-    // WiFi Status
-    int status = ASSOCSTATUS_DISCONNECTED;
-    // Try to connect while not connected and not error
-    while ((status != ASSOCSTATUS_ASSOCIATED) &&
-           (status != ASSOCSTATUS_CANNOTCONNECT))
-    {
-        // Check status
-        status = Wifi_AssocStatus();
-        
-        printf("before");
-        // Wait for a while
-        swiWaitForVBlank();
-        printf("after");
-    }
-
-    // Return 1 if the connection succeded
-    WiFi_initialized = (status == ASSOCSTATUS_ASSOCIATED);
-    printf("WiFi connected: %d\n", WiFi_initialized);
-    return WiFi_initialized;
+    unsigned char byte_data_buff[5];
+    byte_data_buff[0] = 0; // 0 = freq
+    memcpy(byte_data_buff + 1, freq_union.bytes, 4); // Copy 4 bytes of the freq (int)
+    sendData(byte_data_buff, 5);
 }
 
-int openSocket() {
-    // If socket already opened return 0 (error)
-    if (socket_opened == true)
-        return 0;
+void send_amp(float amp) {
+    union DataUnion amp_union;
+    amp_union.f = amp;
 
-    socket_id = socket(AF_INET, SOCK_DGRAM, 0); // UDP socket
-
-    //-----------Configure receiving side---------------------//
-
-    sa_in.sin_family = AF_INET;         // Type of address (Inet)
-    sa_in.sin_port = htons(LOCAL_PORT); // set input port
-    sa_in.sin_addr.s_addr = 0x00000000; // Receive data from any address
-    // Bind the socket
-    if (bind(socket_id, (struct sockaddr *)&sa_in, sizeof(sa_in)) < 0)
-        return 0; // Error binding the socket
-
-    //-----------Configure sending side-----------------------//
-
-    sa_out.sin_family = AF_INET;       // Type of address (Inet)
-    sa_out.sin_port = htons(OUT_PORT); // set output port (same as input)
-
-    // Retrieve network parameters to obtain the broadcast address
-    struct in_addr gateway, snmask, dns1, dns2;
-    Wifi_GetIPInfo(&gateway, &snmask, &dns1, &dns2);
-    unsigned long ip = Wifi_GetIP();
-    unsigned long mask = snmask.s_addr;
-
-    // Calculate broadcast address
-    unsigned long broadcast_addr = ip | ~mask;
-
-    // Destination address (broadcast)
-    sa_out.sin_addr.s_addr = broadcast_addr;
-
-    // Set socket to be non-blocking
-    char nonblock = 1;
-    ioctl(socket_id, FIONBIO, &nonblock);
-
-    // Return successful flag
-    socket_opened = 1;
-    return socket_opened;
+    unsigned char byte_data_buff[5];
+    byte_data_buff[0] = 1; // 1 = amp
+    memcpy(byte_data_buff + 1, amp_union.bytes, 4); // Copy 4 bytes of the amp (float)
+    sendData(byte_data_buff, 5);
 }
 
-void closeSocket() {
-    // If socket not opened, nothing to do
-    if (socket_opened == false)
-        return;
+void send_phase(int phase) {
+    union DataUnion phase_union;
+    phase_union.i = phase;
 
-    // Shutdown and close the socket in both directions
-    shutdown(socket_id, SHUT_RDWR);
-    closesocket(socket_id);
-    socket_opened = false;
+    unsigned char byte_data_buff[5];
+    byte_data_buff[0] = 2; // 2 = phase
+    memcpy(byte_data_buff + 1, phase_union.bytes, 4); // Copy 4 bytes of the phase (int)
+    sendData(byte_data_buff, 5);
 }
 
-void disconnectFromWiFi() {
-    // If Wi-Fi not connected, nothing to do
-    if (WiFi_initialized == false)
-        return;
+void send_wave(WaveType wave) {
+    union DataUnion wave_union;
+    wave_union.w = wave;
 
-    // Disconnect from the access point
-    Wifi_DisconnectAP();
-    WiFi_initialized = false;
+    unsigned char byte_data_buff[5];
+    byte_data_buff[0] = 3; // 3 = wave
+    memcpy(byte_data_buff + 1, wave_union.bytes, 4); // Copy 4 bytes of the wave (WaveType)
+    sendData(byte_data_buff, 5);
 }
 
-int sendData(char *data_buff, int bytes) {
-    // If no socket is opened return (error)
-    if (socket_opened == false)
-        return -1;
+void send_mute(int mute) {
+    union DataUnion mute_union;
+    mute_union.i = mute;
 
-    // Send the data
-    sendto(socket_id,                  // Socket id
-           data_buff,                  // buffer of data
-           bytes,                      // Bytes to send
-           0,                          // Flags (none)
-           (struct sockaddr *)&sa_out, // Output side of the socket
-           sizeof(sa_out));            // Size of the structure
-
-    // Return always true
-    return 1;
+    unsigned char byte_data_buff[5];
+    byte_data_buff[0] = 4; // 4 = mute
+    memcpy(byte_data_buff + 1, mute_union.bytes, 4); // Copy 4 bytes of the mute (int)
+    sendData(byte_data_buff, 5);
 }
 
-int receiveData(char *data_buff, int bytes) {
-    int received_bytes;
-    int info_size = sizeof(sa_in);
+void send_gate(int gate) {
+    union DataUnion gate_union;
+    gate_union.i = gate;
 
-    // If no socket is opened, return (error)
-    if (socket_opened == false)
-        return -1;
-
-    // Try to receive the data
-    received_bytes = recvfrom(
-        socket_id,                 // Socket id
-        data_buff,                 // Buffer where to put the data
-        bytes,                     // Bytes to receive (at most)
-        ~MSG_PEEK,                 // Returned data is marked as read
-        (struct sockaddr *)&sa_in, // Sender information
-        &info_size);               // Sender info size
-
-    // Discard data sent by ourselves
-    if (sa_in.sin_addr.s_addr == Wifi_GetIP())
-        return 0;
-
-    // Return the amount of received bytes
-    return received_bytes;
+    unsigned char byte_data_buff[5];
+    byte_data_buff[0] = 5; // 5 = gate
+    memcpy(byte_data_buff + 1, gate_union.bytes, 4); // Copy 4 bytes of the gate (int)
+    sendData(byte_data_buff, 5);
 }
 
-int is_wifi_enabled() {
-    return wifi_enabled;
+void send_gate_speed(int gate_speed) {
+    union DataUnion gate_speed_union;
+    gate_speed_union.i = gate_speed;
+
+    unsigned char byte_data_buff[5];
+    byte_data_buff[0] = 6; // 6 = gate_speed
+    memcpy(byte_data_buff + 1, gate_speed_union.bytes, 4); // Copy 4 bytes of the gate_speed (int)
+    sendData(byte_data_buff, 5);
 }
-void set_wifi_enabled(int enabled) {
-    if (wifi_enabled){
-        closeSocket();
-        disconnectFromWiFi();
-        printf("WiFi disabled.\n");
-        wifi_enabled = 0;
-    } else {
-        printf("Initializing WiFi...\n");
-        if (initWiFi()) {
-            printf("WiFi initialized.\n");
-            wifi_enabled = 1;
-            openSocket();
+
+int is_sync_enabled() {
+    return sync_enabled;
+}
+
+void set_sync_enabled(int enabled) {
+    if (enabled) {
+        if (!wifi_enabled) {
+            printf("Initializing WiFi...\n");
+            if (initWiFi()) {
+                if (openSocket()) {
+                    printf("Wifi initilaized");
+                    wifi_enabled = 1;
+                    sync_enabled = 1;
+                } else {
+                    wifi_enabled = 0;
+                    sync_enabled = 0;
+                }
+            } else {
+                wifi_enabled = 0;
+                sync_enabled = 0;
+            }
         } else {
-            wifi_enabled = 0;
+            sync_enabled = 1;
         }
+    } else {
+        sync_enabled = 0;
     }
+
+    // if (wifi_enabled){
+    //     // closeSocket();
+    //     // disconnectFromWiFi();
+    //     printf("WiFi disabled.\n");
+    //     wifi_enabled = 0;
+    // } else {
+    //     printf("Initializing WiFi...\n");
+    //     if (initWiFi()) {
+    //         if (openSocket()) {
+    //             printf("Wifi initilaized");
+    //             wifi_enabled = 1;
+    //         } else {
+    //             wifi_enabled = 0;
+    //         }
+    //     } else {
+    //         wifi_enabled = 0;
+    //     }
+    // }
 }

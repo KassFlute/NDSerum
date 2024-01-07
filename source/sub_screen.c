@@ -220,7 +220,7 @@ void InitSubScreen() {
     SetMuteButton(!IsPlaying());
     SetGateButton(IsGated());
     SetGateFader(GetGateSpeed());
-    SetWifiButton(is_wifi_enabled());
+    SetWifiButton(is_sync_enabled());
 }
 
 void DrawFreqFader() {

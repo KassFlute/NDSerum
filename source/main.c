@@ -14,6 +14,21 @@
 #include "timer_muter.h"
 #include "wifi_sync.h"
 
+typedef enum Messages_e
+{
+	A, // 0x00
+	B, // 0x01
+	X, // 0x02
+	Y  // 0x03
+} Message;
+
+union DataUnion {
+	float f;
+	int i;
+	WaveType w;
+	unsigned char bytes[4];
+}; // Type capable of storing multiple types of data in the same variable
+
 // Uncomment the following line to enable debug mode
 //#define DEBUG
 
@@ -53,26 +68,30 @@ void keys_ISR() {
 	if (keys & KEY_A) {
 		printf("A\n");
 		PauseResumeSound();
+		if (is_sync_enabled()) send_mute(!IsPlaying());
 		SetMuteButton(!IsPlaying());
 	}
 	if (keys & KEY_B) {
 		printf("B\n");
 		DecrementFrequency();
 		SetFreqFader(GetFrequency());
+		if (is_sync_enabled()) send_freq(GetFrequency());
 		//DrawWaveMain(main_buffer, main_buffer_length);
 		wasCalled = 1;
 	}
 	if (keys & KEY_L) {
 		printf("L\n");
-		DecrementPhase10();
+		DecrementPhase();
 		SetPhaseFader(GetPhase());
+		if (is_sync_enabled()) send_phase(GetPhase());
 		//DrawWaveMain(main_buffer, main_buffer_length);
 		wasCalled = 1;
 	}
 	if (keys & KEY_R) {
 		printf("R\n");
-		IncrementPhase10();
+		IncrementPhase();
 		SetPhaseFader(GetPhase());
+		if (is_sync_enabled()) send_phase(GetPhase());
 		//DrawWaveMain(main_buffer, main_buffer_length);
 		wasCalled = 1;
 	}
@@ -89,54 +108,91 @@ void keys_ISR() {
 		wasCalled = 1;
 	}
 	if (keys & KEY_LEFT) {
-		printf("LEFT\n");
+		//printf("LEFT\n");
 		DecrementWaveType();
 		SetWaveSelector(GetWaveType());
+		if (is_sync_enabled()) send_wave(GetWaveType());
 		//DrawWaveMain(main_buffer, main_buffer_length);
 		wasCalled = 1;
 	}
 	if (keys & KEY_RIGHT) {
-		printf("RIGHT\n");
+		//printf("RIGHT\n");
 		IncrementWaveType();
 		SetWaveSelector(GetWaveType());
+		if (is_sync_enabled()) send_wave(GetWaveType());
 		//DrawWaveMain(main_buffer, main_buffer_length);
 		wasCalled = 1;
 	}
-
-	// keys = ~(REG_KEYXY);
-	// if (keys & KEY_X)
-	// {
-	// 	printf("X\n");
-	// }
-	// if (keys & KEY_Y)
-	// {
-	// 	printf("Y\n");
-	// }
 }
 
 void wifi_receive(){
-	// char byte_data_buff[2];
-	// if (receiveData(byte_data_buff, 2) > 0) {
-	// 	short data_buff = (byte_data_buff[0] << 8) | byte_data_buff[1];
-	// 	int param_index = (data_buff[0] & 0xC000) >> 14;
-	// 	int param_value = data_buff[0] & 0x3FFF;
+	unsigned char byte_data_buff[5];
+	if (receiveData(byte_data_buff, 5) > 0) {
+		printf("Received (SWAGER): %d, %d, %d, %d, %d\n", byte_data_buff[0], byte_data_buff[1], byte_data_buff[2], byte_data_buff[3], byte_data_buff[4]);
+		int param_index = byte_data_buff[0];
+		union DataUnion param_union;
 
-	// 	switch (param_index)
-	// 	{
-	// 	case 0:
-	// 		printf("Frequency: %d\n", param_value);
-	// 		break;
-	// 	case 1:
-	// 		printf("Amplitude: %d\n", param_value);
-	// 		break;
-	// 	case 2:
-	// 		printf("Phase: %d\n", param_value);
-	// 		break;
-	// 	default:
-	// 		break;
-	// 	}
-	// }
+		// Reconstruct the float or int from the received bytes
+		memcpy(param_union.bytes, &byte_data_buff[1], 4);
+
+		switch (param_index) {
+			case 0:
+				printf("Frequency from Wifi: %d\n", param_union.i);
+				SetFrequency(param_union.i);
+				SetFreqFader(GetFrequency());
+				DrawWaveMain(main_buffer, main_buffer_length);
+				break;
+			case 1:
+				printf("Amplitude from Wifi: %f\n", param_union.f);
+				SetAmplitude(param_union.f);
+				SetAmplitudeFader(GetAmplitude());
+				DrawWaveMain(main_buffer, main_buffer_length);
+				break;
+			case 2:
+				printf("Phase from Wifi: %d\n", param_union.i);
+				SetPhase(param_union.i);
+				SetPhaseFader(GetPhase());
+				DrawWaveMain(main_buffer, main_buffer_length);
+				break;
+			case 3:
+				printf("Wave from Wifi: %d\n", param_union.w);
+				SetWaveType(param_union.w);
+				SetWaveSelector(GetWaveType());
+				DrawWaveMain(main_buffer, main_buffer_length);
+				break;
+			case 4:
+				printf("Mute from Wifi: %d\n", param_union.i);
+				if (param_union.i) {
+					PauseSound();
+				} else {
+					ResumeSound();
+				}
+				SetMuteButton(!IsPlaying());
+				break;
+			case 5:
+				printf("Gate from Wifi: %d\n", param_union.i);
+				SetGate(param_union.i);
+				SetGateButton(IsGated());
+				break;
+			case 6:
+				printf("Gate speed from Wifi: %d\n", param_union.i);
+				SetGateSpeed(param_union.i);
+				SetGateFader(GetGateSpeed());
+				break;
+			default:
+				break;
+		}
+	}
 }
+
+// void receiveMessage() {
+// 	char msg[2];
+
+// 	// Listen for messages from others
+// 	if (receiveData(msg, 2) > 0) {
+// 		printf("Received (NUL): %d %d\n", msg[0], msg[1]);
+// 	}
+// }
 
 int main(void) {
 	InitSound(); // Initialize the sound system
@@ -167,25 +223,31 @@ int main(void) {
 		unsigned keys = keysDown();
 		// X and Y pressed one time
 		if (keys == KEY_X) {
-			printf("X\n");
 			IncrementFrequency();
 			SetFreqFader(GetFrequency());
+			if (is_sync_enabled()) send_freq(GetFrequency());
 			DrawWaveMain(main_buffer, main_buffer_length);
 		}
 		if (keys == KEY_Y) {
 			printf("Y\n");
 			EnableDisableMuter();
 			SetGateButton(IsGated());
+			if (is_sync_enabled()) send_gate(IsGated());
+			// char msg[2];
+			// msg[0] = (char)A;
+			// msg[1] = (char)B;
+			// // Send the msg
+			// sendData(msg, 2);
 		}
 		if (keys == KEY_START)
 		{
 			printf("START\n");
-			if (!is_wifi_enabled()) {
-				set_wifi_enabled(1);
-				SetWifiButton(is_wifi_enabled());
+			if (!is_sync_enabled()) {
+				set_sync_enabled(1);
+				SetWifiButton(is_sync_enabled());
 			} else {
-				set_wifi_enabled(0);
-				SetWifiButton(is_wifi_enabled());
+				set_sync_enabled(0);
+				SetWifiButton(is_sync_enabled());
 			}
 		}
 		// Touch screen pressed on time
@@ -201,6 +263,7 @@ int main(void) {
 						if (newWave != GetWaveType()) {
 							SetWaveType(newWave);
 							SetWaveSelector(GetWaveType());
+							if (is_sync_enabled()) send_wave(GetWaveType());
 							DrawWaveMain(main_buffer, main_buffer_length);
 						}
 					}
@@ -211,6 +274,7 @@ int main(void) {
 					if (touch.py >= mute_button_start_y && touch.py <= mute_button_start_y + mute_button_height) {
 						PauseResumeSound();
 						SetMuteButton(!IsPlaying());
+						if (is_sync_enabled()) send_mute(!IsPlaying());
 					}
 				}
 
@@ -219,6 +283,7 @@ int main(void) {
 					if (touch.py >= gate_button_start_y && touch.py <= gate_button_start_y + gate_button_height) {
 						EnableDisableMuter();
 						SetGateButton(IsGated());
+						if (is_sync_enabled()) send_gate(IsGated());
 					}
 				}
 			}
@@ -242,6 +307,7 @@ int main(void) {
 					if (newFrequency != GetFrequency()){
 						SetFrequency(newFrequency);
 						SetFreqFader(GetFrequency());
+						if (is_sync_enabled()) send_freq(GetFrequency());
 						DrawWaveMain(main_buffer, main_buffer_length);
 					}
 				}
@@ -253,6 +319,7 @@ int main(void) {
 					if (newAmplitude != GetAmplitude()){
 						SetAmplitude(newAmplitude);
 						SetAmplitudeFader(GetAmplitude());
+						if (is_sync_enabled()) send_amp(GetAmplitude());
 						DrawWaveMain(main_buffer, main_buffer_length);
 					}
 				}
@@ -264,6 +331,7 @@ int main(void) {
 					if (newPhase != GetPhase()){
 						SetPhase(newPhase);
 						SetPhaseFader(GetPhase());
+						if (is_sync_enabled()) send_phase(GetPhase());
 						DrawWaveMain(main_buffer, main_buffer_length);
 					}
 				}
@@ -277,6 +345,7 @@ int main(void) {
 						if (newGateSpeed != GetGateSpeed()) {
 							SetGateSpeed(newGateSpeed);
 							SetGateFader(GetGateSpeed());
+							if (is_sync_enabled()) send_gate_speed(GetGateSpeed());
 						}
 					}
 				}
@@ -284,14 +353,18 @@ int main(void) {
 		}
 
 		// Wifi receive
-		// if (is_wifi_enabled()) {
-		// 	wifi_receive();
-		// }
+		if (is_sync_enabled()) {
+			wifi_receive();
+		}
+
+		//receiveMessage();
+		// sendMessage();
 
 		// Main screen update for interrupts
 		if(wasCalled){
 			irqDisable(IRQ_KEYS);
 			irqDisable(IRQ_TIMER1);
+			//FillBuffer();
 			DrawWaveMain(main_buffer, main_buffer_length);
 			wasCalled = 0;
 			irqEnable(IRQ_KEYS);

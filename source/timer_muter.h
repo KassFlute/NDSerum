@@ -8,8 +8,8 @@
 #define MIN(a, b) (((a) < (b)) ? (a) : (b))
 
 void InitTimer();
-
 void EnableDisableMuter();
+void SetGate(int enabled);
 void SetGateSpeed(int speed);
 int GetGateSpeed();
 int IsGated();

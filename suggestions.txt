@@ -1,12 +1,10 @@
 nécessaire:
 
-le son bizzare sur certaines fréquences
-
-Wifi 
+le son bizzare sur certaines fréquences -> FillBuffer trop long pour les interrupts -> faire comme le main screen
 
 Clean tout (commenter les points h)
 
-WoperPoint
+WoperPoint image
 
 commandes:
 
@@ -27,10 +25,9 @@ B: frequency --
 
 bonus:
 
-l'écran du bas peut aussi servir à dessiner une wave custom. (zeubi)
+disable timer interupts instead of ignoring them when gate is off
 
 un bouton on/off qui éteint vraiment (stoper le stream et set une wave "vide")
 
-disable timer interupts instead of ignoring them when gate is off
-
 mute avec le stream et pas en mettant des zeros dans le buffer 🥴🥴
+
