@@ -1,18 +1,6 @@
 nécessaire:
 
-
-les interupts prennent trop de temps 
--> mettre draw main dans la fonction principale (boucle de polling) 
--> tester en boucle (polling) si des parametres on changés (fréquence, phase, amplitude, type de wave) 
--> si ils ont changés, redraw ! 
-
-axes mieux : tiles lettre + fonction temps
-
-Améliorer le muter
-
-réparer le white noise à 20 hz wtf la street
-
-boutons écrans bas
+le son bizzare sur certaines fréquences
 
 Wifi 
 
@@ -20,6 +8,7 @@ Clean tout (commenter les points h)
 
 WoperPoint
 
+commandes:
 
 UP: more periods
 DOWN : less periods
@@ -42,6 +31,6 @@ l'écran du bas peut aussi servir à dessiner une wave custom. (zeubi)
 
 un bouton on/off qui éteint vraiment (stoper le stream et set une wave "vide")
 
-diable timer interupts instead of ignoring them when gate is off
+disable timer interupts instead of ignoring them when gate is off
 
 mute avec le stream et pas en mettant des zeros dans le buffer 🥴🥴
