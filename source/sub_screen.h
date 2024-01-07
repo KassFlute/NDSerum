@@ -8,6 +8,7 @@
 #include "sound.h"
 #include "BGSub.h"
 #include "timer_muter.h"
+#include "wifi_sync.h"
 
 void InitSubScreen();
 

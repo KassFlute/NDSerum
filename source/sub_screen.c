@@ -26,7 +26,7 @@ int x_gate_fader = 24; // Static fader position
 int y_gate_fader = 12; // Dynamic fader position
 
 int x_wifi_button = 23; // Static wifi status position
-int y_wifi_button = 15; // Static wifi status position
+int y_wifi_button = 20; // Static wifi status position
 bool wifi_button_enable = 1; // 0 = disabled, 1 = enabled
 
 //Tile #0 (transparent tile)
@@ -220,6 +220,7 @@ void InitSubScreen() {
     SetMuteButton(!IsPlaying());
     SetGateButton(IsGated());
     SetGateFader(GetGateSpeed());
+    SetWifiButton(is_wifi_enabled());
 }
 
 void DrawFreqFader() {
@@ -450,7 +451,7 @@ void DrawWifiButton() {
     }
 }
 
-void SetWifiStatus(int enabled) {
+void SetWifiButton(int enabled) {
     /*
      * Set the position of the wifi status
      * @param enabled : the new state of the wifi

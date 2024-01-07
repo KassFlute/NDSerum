@@ -17,5 +17,6 @@ void disconnectFromWiFi();
 void send_freq(int freq);
 void send_amp(float amp);
 void send_phase(int phase);
-
+int is_wifi_enabled();
+void set_wifi_enabled(int enabled);
 #endif //  WIFI_MINILIB_H

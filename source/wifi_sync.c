@@ -6,6 +6,8 @@
 #define LOCAL_PORT 8888
 #define OUT_PORT 8888
 
+bool wifi_enabled = 0; // 0 = disabled, 1 = enabled
+
 // Socket i/o configuration
 struct sockaddr_in sa_out, sa_in;
 int socket_id;
@@ -38,7 +40,9 @@ int initWiFi() {
         count = Wifi_GetNumAP();
         for (i = 0; (i < count) && (found == 0); i++) {
             Wifi_GetAPData(i, &ap);
+            printf("AP: %s\n", ap.ssid);
             if (strcmp(SSID, ap.ssid) == 0)
+            printf("Found AP: %s\n", ap.ssid);
                 found = 1; // Our predifined AP has been found
         }
     }
@@ -55,13 +59,16 @@ int initWiFi() {
     {
         // Check status
         status = Wifi_AssocStatus();
-
+        
+        printf("before");
         // Wait for a while
         swiWaitForVBlank();
+        printf("after");
     }
 
     // Return 1 if the connection succeded
     WiFi_initialized = (status == ASSOCSTATUS_ASSOCIATED);
+    printf("WiFi connected: %d\n", WiFi_initialized);
     return WiFi_initialized;
 }
 
@@ -168,4 +175,25 @@ int receiveData(char *data_buff, int bytes) {
 
     // Return the amount of received bytes
     return received_bytes;
+}
+
+int is_wifi_enabled() {
+    return wifi_enabled;
+}
+void set_wifi_enabled(int enabled) {
+    if (wifi_enabled){
+        closeSocket();
+        disconnectFromWiFi();
+        printf("WiFi disabled.\n");
+        wifi_enabled = 0;
+    } else {
+        printf("Initializing WiFi...\n");
+        if (initWiFi()) {
+            printf("WiFi initialized.\n");
+            wifi_enabled = 1;
+            openSocket();
+        } else {
+            wifi_enabled = 0;
+        }
+    }
 }

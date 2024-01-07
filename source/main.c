@@ -24,7 +24,6 @@ int16_t main_buffer[4800]; // main buffer storing the sound (to be copied to the
 int main_buffer_length;	   // main buffer length (in samples)
 
 bool sub_screen_mode = 0; // 0 = controls, 1 = drawing
-bool wifi_enabled = 0;	  // 0 = disabled, 1 = enabled
 
 int freq_fader_start = 8; // Start of the volume fader in pixels
 int amp_fader_start = 32; // Start of the amplitude fader in pixels
@@ -103,19 +102,6 @@ void keys_ISR() {
 		//DrawWaveMain(main_buffer, main_buffer_length);
 		wasCalled = 1;
 	}
-	if (keys & KEY_START) {
-		printf("START\n");
-		if (!wifi_enabled) {
-			initWiFi();
-			openSocket();
-			wifi_enabled = 1;
-		}
-		else {
-			closeSocket();
-			disconnectFromWiFi();
-			wifi_enabled = 0;
-		}
-	}
 
 	// keys = ~(REG_KEYXY);
 	// if (keys & KEY_X)
@@ -164,7 +150,7 @@ int main(void) {
 	InitSubScreen();
 
 	//irqInit();
-	REG_KEYCNT = (1 << 14) | KEY_A | KEY_B | KEY_X | KEY_Y | KEY_L | KEY_R | KEY_RIGHT | KEY_LEFT | KEY_UP | KEY_DOWN | KEY_START;
+	REG_KEYCNT = (1 << 14) | KEY_A | KEY_B | KEY_X | KEY_Y | KEY_L | KEY_R | KEY_RIGHT | KEY_LEFT | KEY_UP | KEY_DOWN;
 	irqSet(IRQ_KEYS, &keys_ISR);
 	irqEnable(IRQ_KEYS);
 
@@ -190,6 +176,17 @@ int main(void) {
 			printf("Y\n");
 			EnableDisableMuter();
 			SetGateButton(IsGated());
+		}
+		if (keys == KEY_START)
+		{
+			printf("START\n");
+			if (!is_wifi_enabled()) {
+				set_wifi_enabled(1);
+				SetWifiButton(is_wifi_enabled());
+			} else {
+				set_wifi_enabled(0);
+				SetWifiButton(is_wifi_enabled());
+			}
 		}
 		// Touch screen pressed on time
 		if (keys & KEY_TOUCH) {
@@ -287,9 +284,9 @@ int main(void) {
 		}
 
 		// Wifi receive
-		if (wifi_enabled) {
-			wifi_receive();
-		}
+		// if (is_wifi_enabled()) {
+		// 	wifi_receive();
+		// }
 
 		// Main screen update for interrupts
 		if(wasCalled){
