@@ -8,5 +8,6 @@
 #include "sub_screen.h"
 #include "timer_muter.h"
 #include "wifi_sync.h"
+#include "param_storage.h"
 
 

@@ -15,7 +15,7 @@ mm_stream *myStream;				 // The audio stream
 mm_word OnStreamRequest(mm_word length, mm_addr dest, mm_stream_formats format) {
 
 	int amount = (int) length;
-
+	
 	//Fill with 0s when we do not want to play sound
 	if (!isPlaying) {
 		memset(dest, 0, amount*4);

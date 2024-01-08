@@ -188,32 +188,31 @@ void wifi_receive(){
 }
 
 int main(void) {
+	InitSound(); // Initialize the sound system
+	printf("Sound system initialized.\n");
+ 
+	InitTimer(); // Initialize the gate effect system
 
-	// Initialize the sound system
-	InitSound();
+	InitMainScreen(); // Initialize the main screen for displaying the wave and some metrics
+	InitSubScreen(); // Initialize the sub screen for displaying the controls
+
 	#ifdef DEBUG
-		printf("Sound system initialized.\n");
+		consoleDemoInit();
 	#endif
+	printf("\nNDSerum\n");
+	printf("Debug mode is on.\n");
 
-	InitTimer();
-
-	InitMainScreen();
-	InitSubScreen();
-
-	//irqInit();
+	// Keys interrupt setup
 	REG_KEYCNT = (1 << 14) | KEY_A | KEY_B | KEY_X | KEY_Y | KEY_L | KEY_R | KEY_RIGHT | KEY_LEFT | KEY_UP | KEY_DOWN;
 	irqSet(IRQ_KEYS, &keys_ISR);
 	irqEnable(IRQ_KEYS);
 
-	#ifdef DEBUG
-		consoleDemoInit();
-		printf("\nNDSerum\n");
-		printf("Debug mode is on.\n");
-	#endif
+	init_storage(); // Initialize the storage system
+	apply_default_params(); // Apply the default parameters saved in the persistent storage
 
-	DrawWaveMain(main_buffer, main_buffer_length);
+	needUpdate = 1; // Generate initial sound and visual wave
 
-    while(1){
+	while(1){
     	scanKeys();
 		unsigned keys = keysDown();
 		// X and Y pressed one time
@@ -373,3 +372,4 @@ int main(void) {
 		swiWaitForVBlank();
     }
 }
+
