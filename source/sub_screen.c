@@ -216,6 +216,19 @@ u8 tile14[64] = {
     0,0,0,0,0,0,0,0
 };
 
+int blink_state;
+void Timer2_ISR() {
+    if (blink_state == 0) {
+        // Turn orange led off
+        BG_MAP_RAM_SUB(1)[32*(y_wifi_status+wifi_led_status) + x_wifi_status] = 0;
+        blink_state = 1;
+    } else {
+        // Turn orange led on
+        BG_MAP_RAM_SUB(1)[32*(y_wifi_status+wifi_led_status) + x_wifi_status] = 12 + wifi_led_status;
+        blink_state = 0;
+    }
+}
+
 void InitSubScreen() {
     /*
         * Initialize the sub screen
@@ -263,6 +276,11 @@ void InitSubScreen() {
     dmaCopy(tile13, &BG_TILE_RAM_SUB(0)[416], 64);
     dmaCopy(tile14, &BG_TILE_RAM_SUB(0)[448], 64);
 
+    // Timer2 for status blinking
+    blink_state = 0;
+    TIMER_CR(2) = TIMER_ENABLE | TIMER_DIV_1024 | TIMER_IRQ_REQ;
+    TIMER_DATA(2) = TIMER_FREQ_1024(4);
+    irqSet(IRQ_TIMER2, Timer2_ISR);
 
     SetFreqFader(GetFrequency());    
     SetAmplitudeFader(GetAmplitude());
@@ -523,17 +541,7 @@ void DrawWifiSatus() {
     }
 
     // Draw the new status
-    if (wifi_led_status == 0) {
-        // Disconnected
-        BG_MAP_RAM_SUB(1)[32*y_wifi_status + x_wifi_status] = 12;
-    } else if (wifi_led_status == 1) {
-        // Connecting
-        BG_MAP_RAM_SUB(1)[32*(y_wifi_status+1) + x_wifi_status] = 13;
-    } else if (wifi_led_status == 2) {
-        // Connected
-        BG_MAP_RAM_SUB(1)[32*(y_wifi_status+2) + x_wifi_status] = 14;
-    }
-
+    BG_MAP_RAM_SUB(1)[32*(y_wifi_status+wifi_led_status) + x_wifi_status] = 12 + wifi_led_status;
 }
 
 void SetWifiStatus(int status) {
@@ -542,5 +550,11 @@ void SetWifiStatus(int status) {
      * @param status : the new status for the wifi
      */
     wifi_led_status = MAX(MIN(status, 2), 0);
+    if (wifi_led_status == 1) {
+        // Enable blinking
+        irqEnable(IRQ_TIMER2);
+    } else {
+        irqDisable(IRQ_TIMER2);
+    }
     DrawWifiSatus();
 }

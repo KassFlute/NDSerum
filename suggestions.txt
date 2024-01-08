@@ -1,33 +1,27 @@
 nécessaire:
-
-le son bizzare sur certaines fréquences -> FillBuffer trop long pour les interrupts -> faire comme le main screen
-
+le son bizzare sur certaines fréquences -> FillBuffer trop long pour les interrupts -> faire comme le main screen : OK
 Clean tout (commenter les points h)
-
 WoperPoint image
 
 commandes:
-
 UP: more periods
 DOWN : less periods
-
 L: phase plus
 R: phase moins
-
 A: MUTE
-
 LEFT/RIGHT: wave selection 
-
 X: frequency ++
-
 B: frequency -- 
-
+Y: Gate on/ooff
+START: enable sync
 
 bonus:
-
-disable timer interupts instead of ignoring them when gate is off
-
-un bouton on/off qui éteint vraiment (stoper le stream et set une wave "vide")
-
-mute avec le stream et pas en mettant des zeros dans le buffer 🥴🥴
+gate peux changer instantanement de vitesse sans attendre l'interrupt timer1 suivant : OK
+wifi status indcation : OK
+bloquer tous les inputs pendant la connexion wifi : OK
+vider le buffer wifi quand le sync est réactiver pour pas faire tous les packets en attente : OK
+wifi connecting led blinking : OK
+disable timer interupts instead of ignoring them when gate is off : OK
+un bouton on/off qui éteint vraiment (stoper le stream et set une wave "vide") : INUTILE
+mute avec le stream et pas en mettant des zeros dans le buffer 🥴🥴 : mettre des zéros c'est le plus logique 
 

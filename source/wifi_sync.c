@@ -119,8 +119,10 @@ void set_sync_enabled(int enabled) {
             SetMuteButton(1);
             wifi_status = 1;
             SetWifiStatus(wifi_status);
-            if (initWiFi() && openSocket()) {
-                    printf("Wifi and socket initilaized successfully!\n");
+            if (initWiFi()) {
+                printf("Wifi initilaized successfully!\n");
+                if (openSocket()) {
+                    printf("Socket opened successfully!\n");
                     send_ask_parameters();
                     if (old_mute_status == 1) {
                         ResumeSound();
@@ -133,8 +135,22 @@ void set_sync_enabled(int enabled) {
                     SetWifiStatus(wifi_status);
                     sync_enabled = 1;
                     irqEnable(IRQ_KEYS);
+                } else {
+                    printf("Error opening socket !\n");
+                    if (old_mute_status == 1) {
+                        ResumeSound();
+                        SetMuteButton(0);
+                    } else if (old_mute_status == 2) {
+                        SetGate(1);
+                        SetGateButton(1);
+                    }
+                    wifi_status = 0;
+                    SetWifiStatus(wifi_status);
+                    sync_enabled = 0;
+                    irqEnable(IRQ_KEYS);
+                }
             } else {
-                printf("Error initializing WiFi or socket!\n");
+                printf("Error initializing WiFi !\n");
                 if (old_mute_status == 1) {
                     ResumeSound();
                     SetMuteButton(0);

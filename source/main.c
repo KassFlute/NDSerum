@@ -376,12 +376,12 @@ int main(void) {
 		// Main screen and sound engine update
 		if(needUpdate){
 			irqDisable(IRQ_KEYS);
-			irqDisable(IRQ_TIMER1);
+			//irqDisable(IRQ_TIMER1);
 			FillBuffer();
 			DrawWaveMain(main_buffer, main_buffer_length);
 			needUpdate = 0;
 			irqEnable(IRQ_KEYS);
-			irqEnable(IRQ_TIMER1);
+			//irqEnable(IRQ_TIMER1);
 
 		}
 		swiWaitForVBlank();
