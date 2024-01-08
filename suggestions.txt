@@ -1,6 +1,7 @@
 nécessaire:
 le son bizzare sur certaines fréquences -> FillBuffer trop long pour les interrupts -> faire comme le main screen : OK
 Clean tout (commenter les points h)
+
 WoperPoint image
 
 commandes:

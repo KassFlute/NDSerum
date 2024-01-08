@@ -2,14 +2,20 @@
 
 #include <stdio.h>
 
-void SawFill(int16_t* array, int actualFrequency, float amplitude, int phase, int* length ){
+void SawFill(int16_t* array, int frequency, float amplitude, int phase, int* length ){
 
+	//Length of the array
+	int sampleNumber = SAMPLERATE/ (double) frequency;
 
-	int sampleNumber = SAMPLERATE/ (double) actualFrequency; // Quentin
-
+	//Length overwritten
 	*length = sampleNumber;
+
+	//Range determination
 	double range = MAXVALUE * amplitude;
-	double slope = (2*range) / sampleNumber; // Quentin
+
+	//Slope of the sinwave determination
+	double slope = (2*range) / sampleNumber;
+
 	double y;
 	int actualPeriod;
 
@@ -18,6 +24,7 @@ void SawFill(int16_t* array, int actualFrequency, float amplitude, int phase, in
 
 	for (int i = 0; i < sampleNumber; i++) {
 
+		//index with the phase offset
 		int adjustedIndex = (i + phaseOffset) % sampleNumber;
 
 		actualPeriod = adjustedIndex / sampleNumber;

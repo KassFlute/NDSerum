@@ -3,16 +3,10 @@
  * May 2011
  */
 
-#include <nds.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include "main.h"
 
-#include "globals.h"
-#include "sound.h"
-#include "main_screen.h"
-#include "sub_screen.h" // Mystique 1
-#include "timer_muter.h"
-#include "wifi_sync.h"
+// Uncomment the following line to enable debug mode
+//#define DEBUG
 
 typedef enum Messages_e
 {
@@ -22,15 +16,13 @@ typedef enum Messages_e
 	Y  // 0x03
 } Message;
 
+// Type capable of storing multiple types of data in the same variable
 union DataUnion {
 	float f;
 	int i;
 	WaveType w;
 	unsigned char bytes[4];
-}; // Type capable of storing multiple types of data in the same variable
-
-// Uncomment the following line to enable debug mode
-//#define DEBUG
+};
 
 #define MAX(a, b) (((a) > (b)) ? (a) : (b))
 #define MIN(a, b) (((a) < (b)) ? (a) : (b))
@@ -64,6 +56,7 @@ int button_height = 24; // Height of the mute button in pixels
 
 int needUpdate = 0; // if main loop needs to update (when a sound parameter has changed)
 
+//Interrupt handler of the keys
 void keys_ISR() {
 	//printf("Interrupt\n");
 	u16 keys = ~(REG_KEYINPUT);
@@ -194,17 +187,10 @@ void wifi_receive(){
 	}
 }
 
-// void receiveMessage() {
-// 	char msg[2];
-
-// 	// Listen for messages from others
-// 	if (receiveData(msg, 2) > 0) {
-// 		printf("Received (NUL): %d %d\n", msg[0], msg[1]);
-// 	}
-// }
-
 int main(void) {
-	InitSound(); // Initialize the sound system
+
+	// Initialize the sound system
+	InitSound();
 	#ifdef DEBUG
 		printf("Sound system initialized.\n");
 	#endif

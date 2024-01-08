@@ -3,13 +3,13 @@
 
 #include <stdio.h>
 
-void SquareFill(int16_t* array, int actualFrequency, float amplitude, int phase, int* length ){
+void SquareFill(int16_t* array, int frequency, float amplitude, int phase, int* length ){
 
-	int sampleNumber= SAMPLERATE/ (double) actualFrequency;
+	//length of the array
+	int sampleNumber= SAMPLERATE/ (double) frequency;
 
+	//length overwritten
 	*length = sampleNumber;
-
-	int top = 0;
 
 	short range = (short) (MAXVALUE * amplitude);
 
@@ -18,10 +18,11 @@ void SquareFill(int16_t* array, int actualFrequency, float amplitude, int phase,
 
 	for(int i = 0 ; i< sampleNumber ; i++) {
 
+		//index with the offset taken into account
 		int adjustedIndex = (i + phaseOffset) % sampleNumber;
 
+		//Determine the sample value (top or bottom)
 		int top = (int)(adjustedIndex / (sampleNumber/ 2.0) ) % 2;
-
 
 		if(top){
 			array[i] = range;

@@ -9,6 +9,7 @@
 
 int actualZoom = 1;
 
+//Empty tile
 u8 tileNum10[64] = {
    0,0,0,0,0,0,0,0,
    0,0,0,0,0,0,0,0,
@@ -19,6 +20,8 @@ u8 tileNum10[64] = {
    0,0,0,0,0,0,0,0,
    0,0,0,0,0,0,0,0
 };
+
+//0
 u8 tileNum0[64] = {
    0,0,9,9,9,9,0,0,
    0,9,0,0,0,0,9,0,
@@ -31,7 +34,7 @@ u8 tileNum0[64] = {
 };
 
 
-
+//1
 u8 tileNum1[64] = {
    0,0,9,9,9,0,0,0,
    0,0,0,9,9,0,0,0,
@@ -43,6 +46,7 @@ u8 tileNum1[64] = {
    0,0,9,9,9,9,0,0
 };
 
+//2
 u8 tileNum2[64] = {
    0,0,9,9,9,9,0,0,
    0,9,0,0,0,0,9,0,
@@ -54,6 +58,7 @@ u8 tileNum2[64] = {
    0,9,9,9,9,9,9,0
 };
 
+//3
 u8 tileNum3[64] = {
    0,0,0,0,0,0,0,0,
    0,0,9,9,9,9,0,0,
@@ -65,6 +70,7 @@ u8 tileNum3[64] = {
    0,0,9,9,9,9,0,0
 };
 
+//4
 u8 tileNum4[64] = {
    0,0,0,0,0,9,0,0,
    0,0,0,0,9,9,0,0,
@@ -76,6 +82,7 @@ u8 tileNum4[64] = {
    0,0,0,0,0,9,0,0
 };
 
+//5
 u8 tileNum5[64] = {
    0,9,9,9,9,9,9,0,
    0,9,0,0,0,0,0,0,
@@ -87,6 +94,7 @@ u8 tileNum5[64] = {
    0,9,9,9,9,9,0,0
 };
 
+//6
 u8 tileNum6[64] = {
    0,0,9,9,9,9,0,0,
    0,9,0,0,0,0,9,0,
@@ -98,7 +106,7 @@ u8 tileNum6[64] = {
    0,0,9,9,9,9,0,0
 };
 
-
+//7
 u8 tileNum7[64] = {
    0,9,9,9,9,9,9,0,
    0,0,0,0,0,0,9,0,
@@ -110,6 +118,7 @@ u8 tileNum7[64] = {
    0,0,0,9,0,0,0,0
 };
 
+//8
 u8 tileNum8[64] = {
    0,0,9,9,9,9,0,0,
    0,9,0,0,0,0,9,0,
@@ -120,6 +129,8 @@ u8 tileNum8[64] = {
    0,9,0,0,0,0,9,0,
    0,0,9,9,9,9,0,0
 };
+
+//9
 u8 tileNum9[64] = {
    0,0,9,9,9,9,0,0,
    0,9,0,0,0,0,9,0,
@@ -130,6 +141,7 @@ u8 tileNum9[64] = {
    0,9,0,0,0,0,9,0,
    0,0,9,9,9,9,0,0
 };
+
 
 u8 tileDot[64] = {
    0,0,0,0,0,0,0,0,
@@ -152,6 +164,7 @@ u8 tileDegree[64] = {
    0,0,0,0,0,0,0,0,
    0,0,0,0,0,0,0,0
 };
+
 
 u8 tileHz[64] = {
    0,0,0,0,0,0,0,0,
@@ -275,12 +288,14 @@ u8 tilePlus[64] = {
 
 void InitMainScreen() {
 
-	REG_DISPCNT = MODE_5_2D | DISPLAY_BG2_ACTIVE | DISPLAY_BG3_ACTIVE | DISPLAY_BG0_ACTIVE;
-
-
+	//Initialization of the VRAMs
 	VRAM_A_CR = VRAM_ENABLE | VRAM_A_MAIN_BG;
 	VRAM_B_CR = VRAM_ENABLE | VRAM_B_MAIN_BG;
 
+	//Initialization of the main engine
+	REG_DISPCNT = MODE_5_2D | DISPLAY_BG2_ACTIVE | DISPLAY_BG3_ACTIVE | DISPLAY_BG0_ACTIVE;
+
+	//Setup of Background 3
 	BGCTRL[3] = BG_BMP_BASE(0) | BgSize_B8_256x256;
 
 	REG_BG3PA = 256;
@@ -292,6 +307,7 @@ void InitMainScreen() {
 
 	swiCopy(BGMainPal,BG_PALETTE,BGMainPalLen/2);
 
+	//Setup of Background 2
 	BGCTRL[2] = BG_BMP_BASE(5) | BgSize_B16_256x256;
 
 	REG_BG2PA = 256;
@@ -300,9 +316,9 @@ void InitMainScreen() {
 	REG_BG2PD = 256;
 
 	//custom colors for tiles
-
 	BG_PALETTE[9] = RGB15(31,31,31);
 
+	//Setup of Background 0
 	BGCTRL[0] = BG_32x32 | BG_COLOR_256 | BG_MAP_BASE(24) | BG_TILE_BASE(4);
 
 	dmaCopy(tileNum0, &BG_TILE_RAM(4)[0], 64);
@@ -331,9 +347,7 @@ void InitMainScreen() {
 }
 
 void ClearInfoBG() {
-	/*
-	 * Clear the info background
-	 */
+
 	for(int x = 0; x<32 ; x++){
 		for(int y = 0; y<32; y++){
 			BG_MAP_RAM(24)[y*32 + x] = 10;
@@ -342,6 +356,7 @@ void ClearInfoBG() {
 }
 
 void DrawFrequencyMain() {
+
 	int frequency = GetFrequency();
 
 	BG_MAP_RAM(24)[0]=  (frequency / 10000) % 10;
@@ -349,13 +364,11 @@ void DrawFrequencyMain() {
 	BG_MAP_RAM(24)[2]=  (frequency / 100) % 10;
 	BG_MAP_RAM(24)[3]=  (frequency /10) % 10;
 	BG_MAP_RAM(24)[4]=  frequency % 10;
-	BG_MAP_RAM(24)[5]= 13;
+	BG_MAP_RAM(24)[5]= 13; //Hz symbol
 }
 
 void DrawAmplitudeMain() {
-	/*
-	 * Draw the amplitude on the main screen
-	 */
+
 	float amplitude = GetAmplitude();
 
 	BG_MAP_RAM(24)[32*2 + 0] = (int)amplitude % 2;
@@ -366,9 +379,7 @@ void DrawAmplitudeMain() {
 }
 
 void DrawPhaseMain() {
-	/*
-	 * Draw the phase on the main screen
-	 */
+
 	int phase = GetPhase();
 
 	BG_MAP_RAM(24)[32*4 + 0] = (phase / 100) % 10;;
@@ -381,11 +392,14 @@ void DrawTimeScaleMain() {
 
 	int frequency = GetFrequency();
 
+	//time interval of a period in ms
 	double interval = 1 / (double) frequency * 1000;
 
+	//clamp to 999ms
 	int intervalFour = MIN(999,(interval/4.0 ) * actualZoom);
 	int intervalTwo = MIN(999,(interval/2.0 ) * actualZoom);
 
+	//Displays + if bigger than 999
 	if(intervalFour >= 999){
 		BG_MAP_RAM(24)[32 * 13 + 27]= 22;
 		BG_MAP_RAM(24)[32 * 13 + 11]= 22;
@@ -408,8 +422,6 @@ void DrawTimeScaleMain() {
 	BG_MAP_RAM(24)[32 * 13 + 24]= (intervalFour/100) % 10;
 	BG_MAP_RAM(24)[32 * 13 + 25]= (intervalFour/10) % 10;
 	BG_MAP_RAM(24)[32 * 13 + 26]= intervalFour % 10;
-
-
 }
 
 void DrawText(){
@@ -440,6 +452,7 @@ void DrawText(){
 
 
 void ZoomIn() {
+
 	actualZoom *= 2;
 }
 
@@ -452,11 +465,6 @@ void ZoomOut() {
 }
 
 void DrawWaveMain(int16_t * main_buffer, int length) {
-	/*
-	 * Draw the wave and metrics on the main screen
-	 * @param main_buffer : the buffer containing the wave
-	 * @param length : the length of the buffer
-	*/
 
 	// Metrics draw
 	ClearInfoBG();
@@ -466,9 +474,7 @@ void DrawWaveMain(int16_t * main_buffer, int length) {
 	DrawTimeScaleMain();
 	DrawText();
 
-	//reset to one phase
 	//  Wave draw
-
 	u16 yellow = ARGB16(1,31,31,0);
 	u16 transparent = ARGB16(0,0,0,0);
 

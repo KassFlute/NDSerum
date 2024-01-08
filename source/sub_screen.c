@@ -217,6 +217,8 @@ u8 tile14[64] = {
 };
 
 int blink_state;
+
+//Interrupt handler of TIMER2
 void Timer2_ISR() {
     if (blink_state == 0) {
         // Turn orange led off
@@ -230,9 +232,7 @@ void Timer2_ISR() {
 }
 
 void InitSubScreen() {
-    /*
-        * Initialize the sub screen
-    */
+
     VRAM_C_CR = VRAM_ENABLE | VRAM_C_SUB_BG;
     REG_DISPCNT_SUB = MODE_5_2D | DISPLAY_BG0_ACTIVE | DISPLAY_BG2_ACTIVE;
 
@@ -294,9 +294,6 @@ void InitSubScreen() {
 }
 
 void DrawFreqFader() {
-    /*
-        * Draw the frequency fader
-    */
 
     // Erase the previous fader
     for(int x=x_volume_fader; x<x_volume_fader+2; x+=1) {
@@ -314,18 +311,12 @@ void DrawFreqFader() {
 }
 
 void SetFreqFader(int freq) {
-    /*
-        * Set the position of the frequency fader
-        * @param freq : the new frequency for the fader
-    */
+
     y_volume_fader = 23 - (int) ceil((((double)(freq - 20.0)) / (980.0 / ((double)fader_range))));
     DrawFreqFader();
 }
 
 void DrawAmplitudeFader() {
-    /*
-     * Draw the amplitude fader
-     */
 
     // Erase the previous fader
     for(int x=x_amplitude_fader; x<x_amplitude_fader+2; x+=1) {
@@ -343,19 +334,13 @@ void DrawAmplitudeFader() {
 }
 
 void SetAmplitudeFader(float amplitude) {
-    /*
-     * Set the position of the amplitude fader
-     * @param amplitude : the new amplitude for the fader
-     */
+
     printf("Amplitude: %f\n", amplitude);
     y_amplitude_fader = 23 - (int) ceil((((double)(amplitude)) / (1.0 / ((double)fader_range))));
     DrawAmplitudeFader();
 }
 
 void DrawPhaseFader() {
-    /*
-     * Draw the phase fader
-     */
 
     // Erase the previous fader
     for(int x=x_phase_fader; x<x_phase_fader+2; x+=1) {
@@ -373,18 +358,12 @@ void DrawPhaseFader() {
 }
 
 void SetPhaseFader(int phase) {
-    /*
-     * Set the position of the phase fader
-     * @param phase : the new phase for the fader
-     */
+
     y_phase_fader = 23 - (int) ceil((((double)(phase)) / (360.0 / ((double)fader_range))));
     DrawPhaseFader();
 }
 
 void DrawWaveSelector() {
-    /*
-     * Draw the wave selector
-     */
 
     // Erase the previous selector
     for(int x=x_wave_selector; x<x_wave_selector+3; x+=1) {
@@ -403,18 +382,13 @@ void DrawWaveSelector() {
 }
 
 void SetWaveSelector(WaveType wave) {
-    /*
-     * Set the position of the wave selector
-     * @param wave : the new wave for the selector
-     */
+
     y_wave_selector = 1 + wave * 3;
     DrawWaveSelector();
 }
 
 void DrawMuteButton() {
-    /*
-     * Draw the mute button
-     */
+
     if (is_muted) {
         // Draw the red highlight
         for (int x = x_mute_button; x < x_mute_button+3; x += 1) {
@@ -433,18 +407,13 @@ void DrawMuteButton() {
 }
 
 void SetMuteButton(int enabled) {
-    /*
-     * Set the position of the mute button
-     * @param enabled : the new state of the button
-     */
+
     is_muted = enabled ? 1 : 0;
     DrawMuteButton();
 }
 
 void DrawGateButton() {
-    /*
-     * Draw the gate button
-     */
+
     if (is_gated) {
         // Draw the red highlight
         for (int x = x_gate_button; x < x_gate_button+3; x += 1) {
@@ -463,18 +432,12 @@ void DrawGateButton() {
 }
 
 void SetGateButton(int enabled) {
-    /*
-     * Set the position of the gate button
-     * @param enabled : the new state of the button
-     */
+
     is_gated = enabled ? 1 : 0;
     DrawGateButton();
 }
 
 void DrawGateFader() {
-    /*
-     * Draw the gate fader
-     */
 
     // Erase the previous fader
     for(int x=x_gate_fader; x<x_gate_fader+2; x+=1) {
@@ -492,18 +455,13 @@ void DrawGateFader() {
 }
 
 void SetGateFader(int gate_speed) {
-    /*
-     * Set the position of the gate fader
-     * @param gate_speed : the new gate speed for the fader
-     */
+
     y_gate_fader = (11 - (gate_speed / 8)) + 1; // Transform gate speed that goes from 0 to 96 to fader position (in tile) that goes from 12 to 1
     DrawGateFader();
 }
 
 void DrawSyncButton() {
-    /*
-     * Draw the wifi button
-     */
+
     if (sync_button_enable) {
         // Draw the red highlight
         for (int x = x_sync_button; x < x_sync_button+3; x += 1) {
@@ -522,18 +480,12 @@ void DrawSyncButton() {
 }
 
 void SetSyncButton(int enabled) {
-    /*
-     * Set the position of the wifi status
-     * @param enabled : the new state of the wifi
-     */
+
     sync_button_enable = enabled ? 1 : 0;
     DrawSyncButton();
 }
 
 void DrawWifiSatus() {
-    /*
-     * Draw the wifi status
-     */
 
     // Erase the previous status
     for(int y=y_wifi_status; y<y_wifi_status+3; y+=1) {
@@ -545,10 +497,7 @@ void DrawWifiSatus() {
 }
 
 void SetWifiStatus(int status) {
-    /*
-     * Set the position of the wifi status
-     * @param status : the new status for the wifi
-     */
+
     wifi_led_status = MAX(MIN(status, 2), 0);
     if (wifi_led_status == 1) {
         // Enable blinking

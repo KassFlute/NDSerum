@@ -3,6 +3,7 @@
 int gate_speed; // Define the speed of the gate (in pixels because of the fader length: 0-95)
 int gate_enabled;
 
+//Interrupt handler of TIMER1
 void Timer1_ISR() {
     printf("MUTER");
     // gate the sound
@@ -11,9 +12,7 @@ void Timer1_ISR() {
 }
 
 void InitTimer() {
-    /*
-        * Initialize the timer
-     */
+
     gate_speed = 20;
     gate_enabled = 0;
     int gate_frequency = (int)((gate_speed * (40 - 1)) / 95) + 1;
@@ -29,17 +28,12 @@ void InitTimer() {
 }
 
 void EnableDisableMuter() {
-    /*
-        * Enable or disable the muter
-     */
+
     SetGate(!IsGated());
 }
 
 void SetGate(int enabled) {
-    /*
-        * Enable or disable the gate
-        * @param enabled : 1 to enable the gate, 0 to disable it
-     */
+
     if (gate_enabled == enabled) return; // Nothing to change
 
     if (enabled) {
@@ -56,10 +50,7 @@ void SetGate(int enabled) {
 }
 
 void SetGateSpeed(int speed) {
-    /*
-        * Set the speed of the gate
-        * @param speed : the new speed of the gate
-     */
+
     gate_speed = MIN(MAX(speed, 0), 95);
     int gate_frequency = (int)((gate_speed * (40 - 1)) / 95) + 1;
     printf("Gate interval: %d\n", gate_frequency);
@@ -71,17 +62,11 @@ void SetGateSpeed(int speed) {
 }
 
 int GetGateSpeed() {
-    /*
-        * Return the speed of the gate
-        * @return the speed of the gate
-     */
+
     return gate_speed;
 }
 
 int IsGated() {
-    /*
-        * Return if the muter is enabled
-        * @return 1 if the muter is enabled, 0 otherwise
-     */
+
     return gate_enabled;
 }
