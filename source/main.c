@@ -44,68 +44,70 @@ int freq_fader_start = 8; // Start of the volume fader in pixels
 int amp_fader_start = 32; // Start of the amplitude fader in pixels
 int phase_fader_start = 56; // Start of the phase fader in pixels
 int fader_width = 16;		// Width of all the faders in pixels
+
 int wave_selector_start_x = 224; // Start of the wave selector in pixels (x)
 int wave_selector_start_y = 8; // Start of the wave selector in pixels (y)
 int wave_selector_width = 24; // Width of the wave selector in pixels
 int wave_selector_height = 96; // Height of the wave selector in pixels
+
 int mute_button_start_x = 224; // Start of the mute button in pixels (x)
 int mute_button_start_y = 120; // Start of the mute button in pixels (y)
-int mute_button_width = 24; // Width of the mute button in pixels
-int mute_button_height = 24; // Height of the mute button in pixels
 int gate_button_start_x = 184; // Start of the gate button in pixels (x)
 int gate_button_start_y = 120; // Start of the gate button in pixels (y)
-int gate_button_width = 24; // Width of the gate button in pixels
-int gate_button_height = 24; // Height of the gate button in pixels
 int gate_fader_start_x = 192; // Start of the gate fader in pixels (x)
 int gate_fader_start_y = 8; // Start of the gate fader in pixels (y)
 int gate_fader_length = 96; // Length of the gate fader in pixels
+int sync_button_start_x = 184; // Start of the sync button in pixels (x)
+int sync_button_start_y = 160; // Start of the sync button in pixels (y)
+int button_width = 24; // Width of the mute button in pixels
+int button_height = 24; // Height of the mute button in pixels
 
-int wasCalled = 0;
+int needUpdate = 0; // if main loop needs to update (when a sound parameter has changed)
 
 void keys_ISR() {
-	printf("Interrupt\n");
+	//printf("Interrupt\n");
 	u16 keys = ~(REG_KEYINPUT);
 	if (keys & KEY_A) {
-		printf("A\n");
+		//printf("A\n");
 		PauseResumeSound();
 		if (is_sync_enabled()) send_mute(!IsPlaying());
 		SetMuteButton(!IsPlaying());
 	}
 	if (keys & KEY_B) {
-		printf("B\n");
+		//printf("B\n");
 		DecrementFrequency();
 		SetFreqFader(GetFrequency());
 		if (is_sync_enabled()) send_freq(GetFrequency());
 		//DrawWaveMain(main_buffer, main_buffer_length);
-		wasCalled = 1;
+		needUpdate = 1;
 	}
 	if (keys & KEY_L) {
-		printf("L\n");
+		//printf("L\n");
 		DecrementPhase();
 		SetPhaseFader(GetPhase());
 		if (is_sync_enabled()) send_phase(GetPhase());
 		//DrawWaveMain(main_buffer, main_buffer_length);
-		wasCalled = 1;
+		needUpdate = 1;
 	}
 	if (keys & KEY_R) {
-		printf("R\n");
+		//printf("R\n");
 		IncrementPhase();
 		SetPhaseFader(GetPhase());
 		if (is_sync_enabled()) send_phase(GetPhase());
 		//DrawWaveMain(main_buffer, main_buffer_length);
-		wasCalled = 1;
+		needUpdate = 1;
 	}
 	if (keys & KEY_UP) {
-		printf("UP\n");
+		//printf("UP\n");
 		ZoomIn();
 		//DrawWaveMain(main_buffer, main_buffer_length);
-		wasCalled = 1;
+		needUpdate = 1;
 	}
 	if (keys & KEY_DOWN) {
-		printf("DOWN\n");
+		//printf("DOWN\n");
 		ZoomOut();
 		//DrawWaveMain(main_buffer, main_buffer_length);
-		wasCalled = 1;
+		needUpdate = 1;
 	}
 	if (keys & KEY_LEFT) {
 		//printf("LEFT\n");
@@ -113,7 +115,7 @@ void keys_ISR() {
 		SetWaveSelector(GetWaveType());
 		if (is_sync_enabled()) send_wave(GetWaveType());
 		//DrawWaveMain(main_buffer, main_buffer_length);
-		wasCalled = 1;
+		needUpdate = 1;
 	}
 	if (keys & KEY_RIGHT) {
 		//printf("RIGHT\n");
@@ -121,14 +123,14 @@ void keys_ISR() {
 		SetWaveSelector(GetWaveType());
 		if (is_sync_enabled()) send_wave(GetWaveType());
 		//DrawWaveMain(main_buffer, main_buffer_length);
-		wasCalled = 1;
+		needUpdate = 1;
 	}
 }
 
 void wifi_receive(){
 	unsigned char byte_data_buff[5];
 	if (receiveData(byte_data_buff, 5) > 0) {
-		printf("Received (SWAGER): %d, %d, %d, %d, %d\n", byte_data_buff[0], byte_data_buff[1], byte_data_buff[2], byte_data_buff[3], byte_data_buff[4]);
+		//printf("Received (SWAGER): %d, %d, %d, %d, %d\n", byte_data_buff[0], byte_data_buff[1], byte_data_buff[2], byte_data_buff[3], byte_data_buff[4]);
 		int param_index = byte_data_buff[0];
 		union DataUnion param_union;
 
@@ -140,25 +142,29 @@ void wifi_receive(){
 				printf("Frequency from Wifi: %d\n", param_union.i);
 				SetFrequency(param_union.i);
 				SetFreqFader(GetFrequency());
-				DrawWaveMain(main_buffer, main_buffer_length);
+				//DrawWaveMain(main_buffer, main_buffer_length);
+				needUpdate = 1;
 				break;
 			case 1:
 				printf("Amplitude from Wifi: %f\n", param_union.f);
 				SetAmplitude(param_union.f);
 				SetAmplitudeFader(GetAmplitude());
-				DrawWaveMain(main_buffer, main_buffer_length);
+				//DrawWaveMain(main_buffer, main_buffer_length);
+				needUpdate = 1;
 				break;
 			case 2:
 				printf("Phase from Wifi: %d\n", param_union.i);
 				SetPhase(param_union.i);
 				SetPhaseFader(GetPhase());
-				DrawWaveMain(main_buffer, main_buffer_length);
+				//DrawWaveMain(main_buffer, main_buffer_length);
+				needUpdate = 1;
 				break;
 			case 3:
 				printf("Wave from Wifi: %d\n", param_union.w);
 				SetWaveType(param_union.w);
 				SetWaveSelector(GetWaveType());
-				DrawWaveMain(main_buffer, main_buffer_length);
+				//DrawWaveMain(main_buffer, main_buffer_length);
+				needUpdate = 1;
 				break;
 			case 4:
 				printf("Mute from Wifi: %d\n", param_union.i);
@@ -179,6 +185,9 @@ void wifi_receive(){
 				SetGateSpeed(param_union.i);
 				SetGateFader(GetGateSpeed());
 				break;
+			case 7:
+				printf("Someone asks for the parameters \n");
+				send_parameters();
 			default:
 				break;
 		}
@@ -226,10 +235,11 @@ int main(void) {
 			IncrementFrequency();
 			SetFreqFader(GetFrequency());
 			if (is_sync_enabled()) send_freq(GetFrequency());
-			DrawWaveMain(main_buffer, main_buffer_length);
+			//DrawWaveMain(main_buffer, main_buffer_length);
+			needUpdate = 1;
 		}
 		if (keys == KEY_Y) {
-			printf("Y\n");
+			//printf("Y\n");
 			EnableDisableMuter();
 			SetGateButton(IsGated());
 			if (is_sync_enabled()) send_gate(IsGated());
@@ -239,16 +249,10 @@ int main(void) {
 			// // Send the msg
 			// sendData(msg, 2);
 		}
-		if (keys == KEY_START)
-		{
-			printf("START\n");
-			if (!is_sync_enabled()) {
-				set_sync_enabled(1);
-				SetWifiButton(is_sync_enabled());
-			} else {
-				set_sync_enabled(0);
-				SetWifiButton(is_sync_enabled());
-			}
+		if (keys == KEY_START) {
+			//printf("START\n");
+			change_sync_enabled();
+			SetSyncButton(is_sync_enabled());
 		}
 		// Touch screen pressed on time
 		if (keys & KEY_TOUCH) {
@@ -264,14 +268,15 @@ int main(void) {
 							SetWaveType(newWave);
 							SetWaveSelector(GetWaveType());
 							if (is_sync_enabled()) send_wave(GetWaveType());
-							DrawWaveMain(main_buffer, main_buffer_length);
+							//DrawWaveMain(main_buffer, main_buffer_length);
+							needUpdate = 1;
 						}
 					}
 				}
 
 				// Mute button
-				if (touch.px >= mute_button_start_x && touch.px <= mute_button_start_x + mute_button_width) {
-					if (touch.py >= mute_button_start_y && touch.py <= mute_button_start_y + mute_button_height) {
+				if (touch.px >= mute_button_start_x && touch.px <= mute_button_start_x + button_width) {
+					if (touch.py >= mute_button_start_y && touch.py <= mute_button_start_y + button_height) {
 						PauseResumeSound();
 						SetMuteButton(!IsPlaying());
 						if (is_sync_enabled()) send_mute(!IsPlaying());
@@ -279,11 +284,19 @@ int main(void) {
 				}
 
 				// Gate button
-				if (touch.px >= gate_button_start_x && touch.px <= gate_button_start_x + gate_button_width) {
-					if (touch.py >= gate_button_start_y && touch.py <= gate_button_start_y + gate_button_height) {
+				if (touch.px >= gate_button_start_x && touch.px <= gate_button_start_x + button_width) {
+					if (touch.py >= gate_button_start_y && touch.py <= gate_button_start_y + button_height) {
 						EnableDisableMuter();
 						SetGateButton(IsGated());
 						if (is_sync_enabled()) send_gate(IsGated());
+					}
+				}
+
+				// Wifi sync button
+				if (touch.px >= sync_button_start_x && touch.px <= sync_button_start_x + button_width) {
+					if (touch.py >= sync_button_start_y && touch.py <= sync_button_start_y + button_height) {
+						change_sync_enabled();
+						SetSyncButton(is_sync_enabled());
 					}
 				}
 			}
@@ -308,7 +321,8 @@ int main(void) {
 						SetFrequency(newFrequency);
 						SetFreqFader(GetFrequency());
 						if (is_sync_enabled()) send_freq(GetFrequency());
-						DrawWaveMain(main_buffer, main_buffer_length);
+						//DrawWaveMain(main_buffer, main_buffer_length);
+						needUpdate = 1;
 					}
 				}
 
@@ -320,7 +334,8 @@ int main(void) {
 						SetAmplitude(newAmplitude);
 						SetAmplitudeFader(GetAmplitude());
 						if (is_sync_enabled()) send_amp(GetAmplitude());
-						DrawWaveMain(main_buffer, main_buffer_length);
+						//DrawWaveMain(main_buffer, main_buffer_length);
+						needUpdate = 1;
 					}
 				}
 
@@ -332,7 +347,8 @@ int main(void) {
 						SetPhase(newPhase);
 						SetPhaseFader(GetPhase());
 						if (is_sync_enabled()) send_phase(GetPhase());
-						DrawWaveMain(main_buffer, main_buffer_length);
+						//DrawWaveMain(main_buffer, main_buffer_length);
+						needUpdate = 1;
 					}
 				}
 
@@ -357,21 +373,17 @@ int main(void) {
 			wifi_receive();
 		}
 
-		//receiveMessage();
-		// sendMessage();
-
-		// Main screen update for interrupts
-		if(wasCalled){
+		// Main screen and sound engine update
+		if(needUpdate){
 			irqDisable(IRQ_KEYS);
 			irqDisable(IRQ_TIMER1);
-			//FillBuffer();
+			FillBuffer();
 			DrawWaveMain(main_buffer, main_buffer_length);
-			wasCalled = 0;
+			needUpdate = 0;
 			irqEnable(IRQ_KEYS);
 			irqEnable(IRQ_TIMER1);
 
 		}
-
 		swiWaitForVBlank();
     }
 }

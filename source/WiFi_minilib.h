@@ -7,7 +7,7 @@
 #include <netinet/in.h>
 #include <sys/socket.h>
 
-#define SSID	"MES-NDS"
+#define SSID "MES-NDS"
 
 
 //WiFi initialization

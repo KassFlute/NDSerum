@@ -33,5 +33,8 @@ void SetGateButton(int enabled);
 void DrawGateFader();
 void SetGateFader(int gate_speed);
 
-void DrawWifiButton();
-void SetWifiButton(int enabled);
+void DrawSyncButton();
+void SetSyncButton(int enabled);
+
+void DrawWifiSatus();
+void SetWifiStatus(int status);

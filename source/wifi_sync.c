@@ -1,6 +1,6 @@
 #include "wifi_sync.h"
 
-int wifi_enabled = 0; // 0 = disabled, 1 = enabled
+int wifi_status = 0; // 0 = disabled, 1 = connecting, 2 = connected
 int sync_enabled = 0; // 0 = disabled, 1 = enabled
 
 union DataUnion {
@@ -80,31 +80,88 @@ void send_gate_speed(int gate_speed) {
     sendData(byte_data_buff, 5);
 }
 
+void send_parameters() {
+    send_gate(IsGated());
+    send_gate_speed(GetGateSpeed());
+    send_mute(!IsPlaying());
+    send_freq(GetFrequency());
+    send_amp(GetAmplitude());
+    send_phase(GetPhase());
+    send_wave(GetWaveType());
+}
+
+void send_ask_parameters(){
+    /*
+        * Ask the parameters to the others DSs (allow ds that join the sync to have the actual parameters)
+    */
+    unsigned char byte_data_buff[5];
+    byte_data_buff[0] = 7; // 7 = ask_parameters
+    sendData(byte_data_buff, 5);
+
+}
+
 int is_sync_enabled() {
     return sync_enabled;
 }
 
 void set_sync_enabled(int enabled) {
+    if (enabled == sync_enabled) { // Nothing to change
+        return;
+    }
     if (enabled) {
-        if (!wifi_enabled) {
+        if (!wifi_status) {
+            irqDisable(IRQ_KEYS);
             printf("Initializing WiFi...\n");
-            if (initWiFi()) {
-                if (openSocket()) {
-                    printf("Wifi initilaized");
-                    wifi_enabled = 1;
+            int old_mute_status = IsGated() ? 2 : (IsPlaying() ? 1 : 0);
+            SetGate(0);
+            SetGateButton(0);
+            PauseSound();
+            SetMuteButton(1);
+            wifi_status = 1;
+            SetWifiStatus(wifi_status);
+            if (initWiFi() && openSocket()) {
+                    printf("Wifi and socket initilaized successfully!\n");
+                    send_ask_parameters();
+                    if (old_mute_status == 1) {
+                        ResumeSound();
+                        SetMuteButton(0);
+                    } else if (old_mute_status == 2) {
+                        SetGate(1);
+                        SetGateButton(1);
+                    }
+                    wifi_status = 2;
+                    SetWifiStatus(wifi_status);
                     sync_enabled = 1;
-                } else {
-                    wifi_enabled = 0;
-                    sync_enabled = 0;
-                }
+                    irqEnable(IRQ_KEYS);
             } else {
-                wifi_enabled = 0;
+                printf("Error initializing WiFi or socket!\n");
+                wifi_status = 0;
+                SetWifiStatus(wifi_status);
                 sync_enabled = 0;
+                irqEnable(IRQ_KEYS);
             }
         } else {
+            flush_wifi_buffer();
+            send_ask_parameters();
             sync_enabled = 1;
         }
     } else {
         sync_enabled = 0;
     }
+}
+
+void change_sync_enabled() {
+    set_sync_enabled(!sync_enabled);
+}
+
+int get_wifi_status() {
+    return wifi_status;
+}
+
+void flush_wifi_buffer() {
+    /*
+        * Flush the wifi buffer
+    */
+    unsigned char byte_data_buff[5];
+    while (receiveData(byte_data_buff, 5) > 0){};
 }

@@ -154,7 +154,7 @@ void SetFrequency(int newFrequency) {
 	 */
 
 	actualFrequency = MAX(MIN(newFrequency, MAXFREQ), MINFREQ);
-	FillBuffer();
+	//FillBuffer();
 }
 
 void IncrementFrequency() {
@@ -199,7 +199,7 @@ void SetAmplitude(float newAmplitude) {
 	 * @param newAmplitude : the new amplitude of the wave
 	 */
 	actualAmplitude = MAX(MIN(newAmplitude, 1), 0);
-	FillBuffer();
+	//FillBuffer();
 }
 
 float GetAmplitude() {
@@ -216,7 +216,7 @@ void SetPhase(int newPhase) {
 	 * @param newPhase : the new phase of the wave
 	 */
 	actualPhase = MAX(MIN(newPhase, 360), 0);
-	FillBuffer();
+	//FillBuffer();
 }
 
 void IncrementPhase() {
@@ -261,7 +261,7 @@ void SetWaveType(WaveType newWaveType){
 	 * @param newWaveType : the new type of the wave
 	 */
 	currentWaveType = newWaveType;
-	FillBuffer();
+	//FillBuffer();
 
 }
 void IncrementWaveType(){
@@ -269,7 +269,7 @@ void IncrementWaveType(){
 	 * Increment the type of the wave
 	 */
 	currentWaveType = (currentWaveType + 1) % waveTypeCount;
-	FillBuffer();
+	//FillBuffer();
 }
 
 void DecrementWaveType(){
@@ -281,7 +281,7 @@ void DecrementWaveType(){
 	} else {
 		currentWaveType -= 1;
 	}
-	FillBuffer();
+	//FillBuffer();
 }
 
 WaveType GetWaveType(){

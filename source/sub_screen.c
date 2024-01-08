@@ -1,5 +1,8 @@
 #include "sub_screen.h"
 
+#define MAX(a, b) (((a) > (b)) ? (a) : (b))
+#define MIN(a, b) (((a) < (b)) ? (a) : (b))
+
 int fader_range = 23; // Range of the faders (in tiles) for the main faders
 
 int x_volume_fader = 1; // Static fader position
@@ -25,9 +28,13 @@ int is_gated = 0; // 0 = not gated, 1 = gated
 int x_gate_fader = 24; // Static fader position
 int y_gate_fader = 12; // Dynamic fader position
 
-int x_wifi_button = 23; // Static wifi status position
-int y_wifi_button = 20; // Static wifi status position
-bool wifi_button_enable = 1; // 0 = disabled, 1 = enabled
+int x_sync_button = 23; // Static wifi status position
+int y_sync_button = 20; // Static wifi status position
+bool sync_button_enable = 1; // 0 = disabled, 1 = enabled
+
+int x_wifi_status = 19; // Static wifi status position
+int y_wifi_status = 3; // Static wifi status position
+int wifi_led_status = 0; // 0 = disconnected, 1 = connecting, 2 = connected 
 
 //Tile #0 (transparent tile)
 u8 tile0[64] = {
@@ -161,7 +168,7 @@ u8 tile10[64] = {
     201,201,201,201,201,201,201,201
 };
 
-// Tile #11 (red dot tile)
+// Tile #11 (small red dot tile)
 u8 tile11[64] = {
     0,0,0,0,0,0,0,0,
     0,0,0,0,0,0,0,0,
@@ -169,6 +176,42 @@ u8 tile11[64] = {
     0,0,0,201,201,0,0,0,
     0,0,0,201,201,0,0,0,
     0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0
+};
+
+// Tile #12 (red dot tile)
+u8 tile12[64] = {
+    0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,
+    0,0,204,204,204,204,0,0,
+    0,0,204,204,204,204,0,0,
+    0,0,204,204,204,204,0,0,
+    0,0,204,204,204,204,0,0,
+    0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0
+};
+
+// Tile #13 (orange dot tile)
+u8 tile13[64] = {
+    0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 202, 202, 202, 202, 0, 0,
+    0, 0, 202, 202, 202, 202, 0, 0,
+    0, 0, 202, 202, 202, 202, 0, 0,
+    0, 0, 202, 202, 202, 202, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0
+};
+
+// Tile #14 (green dot tile)
+u8 tile14[64] = {
+    0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,
+    0,0,203,203,203,203,0,0,
+    0,0,203,203,203,203,0,0,
+    0,0,203,203,203,203,0,0,
+    0,0,203,203,203,203,0,0,
     0,0,0,0,0,0,0,0,
     0,0,0,0,0,0,0,0
 };
@@ -199,6 +242,9 @@ void InitSubScreen() {
     //custom colors for tiles
     BG_PALETTE_SUB[200] = ARGB16(1,0,0,0); // Black
     BG_PALETTE_SUB[201] = ARGB16(1,31,0,0); // Red LE MAXIMUM C'EST 31 PAS 32 SON PÈRE QUI MANGE DIP ASDPPADSFAINNNN
+    BG_PALETTE_SUB[202] = ARGB16(1,26,13,0); // Orange
+    BG_PALETTE_SUB[203] = ARGB16(1,0,20,0); // Green
+    BG_PALETTE_SUB[204] = ARGB16(1,25,0,0); // light red
 
     // Copy tiles for the buttons
     dmaCopy(tile0, &BG_TILE_RAM_SUB(0)[0], 64);
@@ -212,6 +258,11 @@ void InitSubScreen() {
     dmaCopy(tile8, &BG_TILE_RAM_SUB(0)[256], 64);
     dmaCopy(tile9, &BG_TILE_RAM_SUB(0)[288], 64);
     dmaCopy(tile10, &BG_TILE_RAM_SUB(0)[320], 64);
+    dmaCopy(tile11, &BG_TILE_RAM_SUB(0)[352], 64);
+    dmaCopy(tile12, &BG_TILE_RAM_SUB(0)[384], 64);
+    dmaCopy(tile13, &BG_TILE_RAM_SUB(0)[416], 64);
+    dmaCopy(tile14, &BG_TILE_RAM_SUB(0)[448], 64);
+
 
     SetFreqFader(GetFrequency());    
     SetAmplitudeFader(GetAmplitude());
@@ -220,7 +271,8 @@ void InitSubScreen() {
     SetMuteButton(!IsPlaying());
     SetGateButton(IsGated());
     SetGateFader(GetGateSpeed());
-    SetWifiButton(is_sync_enabled());
+    SetSyncButton(is_sync_enabled());
+    SetWifiStatus(get_wifi_status());
 }
 
 void DrawFreqFader() {
@@ -430,32 +482,65 @@ void SetGateFader(int gate_speed) {
     DrawGateFader();
 }
 
-void DrawWifiButton() {
+void DrawSyncButton() {
     /*
      * Draw the wifi button
      */
-    if (wifi_button_enable) {
+    if (sync_button_enable) {
         // Draw the red highlight
-        for (int x = x_wifi_button; x < x_wifi_button+3; x += 1) {
-            for (int y = y_wifi_button; y < y_wifi_button+3; y += 1) {
-                BG_MAP_RAM_SUB(1)[32 * y + x] = 2 + 3 * (y - y_wifi_button) + (x - x_wifi_button);
+        for (int x = x_sync_button; x < x_sync_button+3; x += 1) {
+            for (int y = y_sync_button; y < y_sync_button+3; y += 1) {
+                BG_MAP_RAM_SUB(1)[32 * y + x] = 2 + 3 * (y - y_sync_button) + (x - x_sync_button);
             }
         }
     } else {
         // Erase the previous red highlight
-        for(int x=x_wifi_button; x<x_wifi_button+3; x+=1) {
-            for(int y=y_wifi_button; y<=y_wifi_button+3; y+=1) {
+        for(int x=x_sync_button; x<x_sync_button+3; x+=1) {
+            for(int y=y_sync_button; y<=y_sync_button+3; y+=1) {
                 BG_MAP_RAM_SUB(1)[32*y + x] = 0;
             }
         }
     }
 }
 
-void SetWifiButton(int enabled) {
+void SetSyncButton(int enabled) {
     /*
      * Set the position of the wifi status
      * @param enabled : the new state of the wifi
      */
-    wifi_button_enable = enabled ? 1 : 0;
-    DrawWifiButton();
+    sync_button_enable = enabled ? 1 : 0;
+    DrawSyncButton();
+}
+
+void DrawWifiSatus() {
+    /*
+     * Draw the wifi status
+     */
+
+    // Erase the previous status
+    for(int y=y_wifi_status; y<y_wifi_status+3; y+=1) {
+        BG_MAP_RAM_SUB(1)[32*y + x_wifi_status] = 0;
+    }
+
+    // Draw the new status
+    if (wifi_led_status == 0) {
+        // Disconnected
+        BG_MAP_RAM_SUB(1)[32*y_wifi_status + x_wifi_status] = 12;
+    } else if (wifi_led_status == 1) {
+        // Connecting
+        BG_MAP_RAM_SUB(1)[32*(y_wifi_status+1) + x_wifi_status] = 13;
+    } else if (wifi_led_status == 2) {
+        // Connected
+        BG_MAP_RAM_SUB(1)[32*(y_wifi_status+2) + x_wifi_status] = 14;
+    }
+
+}
+
+void SetWifiStatus(int status) {
+    /*
+     * Set the position of the wifi status
+     * @param status : the new status for the wifi
+     */
+    wifi_led_status = MAX(MIN(status, 2), 0);
+    DrawWifiSatus();
 }
