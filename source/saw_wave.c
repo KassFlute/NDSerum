@@ -1,8 +1,6 @@
 #include "saw_wave.h"
 
-#include <stdio.h>
-
-void SawFill(int16_t* array, int frequency, float amplitude, int phase, int* length ){
+void SawFill(int16_t* array, int frequency, float amplitude, int phase, int* length ) {
 
 	//Length of the array
 	int sampleNumber = SAMPLERATE/ (double) frequency;

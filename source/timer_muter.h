@@ -1,11 +1,8 @@
 #include <nds.h>
 
+#include "globals.h"
 #include "sound.h"
 #include "sub_screen.h"
-
-
-#define MAX(a, b) (((a) > (b)) ? (a) : (b))
-#define MIN(a, b) (((a) < (b)) ? (a) : (b))
 
 /*
  * Initialize the timer

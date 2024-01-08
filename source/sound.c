@@ -1,8 +1,5 @@
 #include "sound.h"
 
-#include <stdlib.h>
-#include <stdio.h>
-
 WaveType currentWaveType; 			 // Actual wave type
 int actualFrequency;				 // Actual frequency of the sound
 float actualAmplitude;				 // Actual amplitude of the sound
@@ -179,16 +176,16 @@ int GetPhase() {
 	return actualPhase;
 }
 
-void SetWaveType(WaveType newWaveType){
+void SetWaveType(WaveType newWaveType) {
 
 	currentWaveType = newWaveType;
 }
-void IncrementWaveType(){
+void IncrementWaveType() {
 
 	currentWaveType = (currentWaveType + 1) % waveTypeCount;
 }
 
-void DecrementWaveType(){
+void DecrementWaveType() {
 
 	if (currentWaveType == 0) {
 		currentWaveType = waveTypeCount - 1;
@@ -197,7 +194,7 @@ void DecrementWaveType(){
 	}
 }
 
-WaveType GetWaveType(){
+WaveType GetWaveType() {
 
 	return currentWaveType;
 }

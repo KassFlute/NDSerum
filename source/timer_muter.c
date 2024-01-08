@@ -5,7 +5,6 @@ int gate_enabled;
 
 //Interrupt handler of TIMER1
 void Timer1_ISR() {
-    printf("MUTER");
     // gate the sound
     PauseResumeSound();
     SetMuteButton(!IsPlaying());
@@ -53,7 +52,7 @@ void SetGateSpeed(int speed) {
 
     gate_speed = MIN(MAX(speed, 0), 95);
     int gate_frequency = (int)((gate_speed * (40 - 1)) / 95) + 1;
-    printf("Gate interval: %d\n", gate_frequency);
+    //printf("Gate interval: %d\n", gate_frequency);
     TIMER_DATA(1) = TIMER_FREQ_1024(gate_frequency); // Set the new frequency
 
     // Apply the new frequency immediately

@@ -1,7 +1,5 @@
 #include "white_noise.h"
 
-#include <stdio.h>
-
 void WhiteNoiseFill(int16_t* array, int frequency, float amplitude, int phase, int* length){
 
 	//length of the array

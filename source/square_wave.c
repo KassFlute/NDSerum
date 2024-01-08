@@ -1,7 +1,4 @@
 #include "square_wave.h"
-#include "sound.h"
-
-#include <stdio.h>
 
 void SquareFill(int16_t* array, int frequency, float amplitude, int phase, int* length ){
 

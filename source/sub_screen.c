@@ -1,8 +1,5 @@
 #include "sub_screen.h"
 
-#define MAX(a, b) (((a) > (b)) ? (a) : (b))
-#define MIN(a, b) (((a) < (b)) ? (a) : (b))
-
 int fader_range = 23; // Range of the faders (in tiles) for the main faders
 
 int x_volume_fader = 1; // Static fader position
@@ -335,7 +332,7 @@ void DrawAmplitudeFader() {
 
 void SetAmplitudeFader(float amplitude) {
 
-    printf("Amplitude: %f\n", amplitude);
+    //printf("Amplitude: %f\n", amplitude);
     y_amplitude_fader = 23 - (int) ceil((((double)(amplitude)) / (1.0 / ((double)fader_range))));
     DrawAmplitudeFader();
 }

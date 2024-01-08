@@ -6,12 +6,12 @@ void init_storage() {
     //fatInitDefault(); // Uncommenting this prevent the program from starting, (#131 on Ed discussion) all storage system then doesn't work.
     // Create file if it doesn't exist
     storage_file = fopen(STORAGE_FILE_PATH, "r+"); // NULL if no file
-    printf("storage_file init: %p\n", storage_file);
+    //printf("storage_file init: %p\n", storage_file);
     if (storage_file == NULL) {
         storage_file = fopen(STORAGE_FILE_PATH, "w");
-        printf("storage_file created: %p\n", storage_file);
+        //printf("storage_file created: %p\n", storage_file);
         if (storage_file != NULL) {
-            printf("Filling file\n");
+            //printf("Filling file\n");
             // Write default values
             int freq = 1000;
             float amp = GetAmplitude();
@@ -38,12 +38,12 @@ void apply_default_params() {
     int gate_speed;
 
     storage_file = fopen(STORAGE_FILE_PATH, "r");
-    printf("storage_file read: %p\n", storage_file);
+    //printf("storage_file read: %p\n", storage_file);
     if (storage_file == NULL) {
         return; // No file, no default params (should not happen)
     } else {
         fscanf(storage_file, "%d %f %d %d %d %d %d", &freq, &amp, &phase, &wave, &mute, &gate, &gate_speed);
-        printf("freq: %d, amp: %f, phase: %d, wave: %d, mute: %d, gate: %d, gate_speed: %d\n", freq, amp, phase, wave, mute, gate, gate_speed);
+        //printf("freq: %d, amp: %f, phase: %d, wave: %d, mute: %d, gate: %d, gate_speed: %d\n", freq, amp, phase, wave, mute, gate, gate_speed);
     }
     fclose(storage_file);
 

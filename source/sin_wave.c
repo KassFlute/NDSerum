@@ -1,5 +1,4 @@
 #include "sin_wave.h"
-#include <stdio.h>
 
 void SinFill(int16_t *array, int frequency, float amplitude, int phase, int *length){
 

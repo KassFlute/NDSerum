@@ -1,36 +1,18 @@
-/*
- * Template Nintendo DS
- * May 2011
+/**
+ ********************************************************************************
+ * @file    main.c
+ * @author  Cassien Roth, Quentin Sandoz
+ * @date    08.01.24
+ * @brief   NDSERUM main file
+ ********************************************************************************
  */
-
 #include "main.h"
 
 // Uncomment the following line to enable debug mode
 //#define DEBUG
 
-typedef enum Messages_e
-{
-	A, // 0x00
-	B, // 0x01
-	X, // 0x02
-	Y  // 0x03
-} Message;
-
-// Type capable of storing multiple types of data in the same variable
-union DataUnion {
-	float f;
-	int i;
-	WaveType w;
-	unsigned char bytes[4];
-};
-
-#define MAX(a, b) (((a) > (b)) ? (a) : (b))
-#define MIN(a, b) (((a) < (b)) ? (a) : (b))
-
 int16_t main_buffer[4800]; // main buffer storing the sound (to be copied to the stream buffer)
 int main_buffer_length;	   // main buffer length (in samples)
-
-bool sub_screen_mode = 0; // 0 = controls, 1 = drawing
 
 int freq_fader_start = 8; // Start of the volume fader in pixels
 int amp_fader_start = 32; // Start of the amplitude fader in pixels
@@ -132,35 +114,35 @@ void wifi_receive(){
 
 		switch (param_index) {
 			case 0:
-				printf("Frequency from Wifi: %d\n", param_union.i);
+				//printf("Frequency from Wifi: %d\n", param_union.i);
 				SetFrequency(param_union.i);
 				SetFreqFader(GetFrequency());
 				//DrawWaveMain(main_buffer, main_buffer_length);
 				needUpdate = 1;
 				break;
 			case 1:
-				printf("Amplitude from Wifi: %f\n", param_union.f);
+				//printf("Amplitude from Wifi: %f\n", param_union.f);
 				SetAmplitude(param_union.f);
 				SetAmplitudeFader(GetAmplitude());
 				//DrawWaveMain(main_buffer, main_buffer_length);
 				needUpdate = 1;
 				break;
 			case 2:
-				printf("Phase from Wifi: %d\n", param_union.i);
+				//printf("Phase from Wifi: %d\n", param_union.i);
 				SetPhase(param_union.i);
 				SetPhaseFader(GetPhase());
 				//DrawWaveMain(main_buffer, main_buffer_length);
 				needUpdate = 1;
 				break;
 			case 3:
-				printf("Wave from Wifi: %d\n", param_union.w);
+				//printf("Wave from Wifi: %d\n", param_union.w);
 				SetWaveType(param_union.w);
 				SetWaveSelector(GetWaveType());
 				//DrawWaveMain(main_buffer, main_buffer_length);
 				needUpdate = 1;
 				break;
 			case 4:
-				printf("Mute from Wifi: %d\n", param_union.i);
+				//printf("Mute from Wifi: %d\n", param_union.i);
 				if (param_union.i) {
 					PauseSound();
 				} else {
@@ -169,17 +151,17 @@ void wifi_receive(){
 				SetMuteButton(!IsPlaying());
 				break;
 			case 5:
-				printf("Gate from Wifi: %d\n", param_union.i);
+				//printf("Gate from Wifi: %d\n", param_union.i);
 				SetGate(param_union.i);
 				SetGateButton(IsGated());
 				break;
 			case 6:
-				printf("Gate speed from Wifi: %d\n", param_union.i);
+				//printf("Gate speed from Wifi: %d\n", param_union.i);
 				SetGateSpeed(param_union.i);
 				SetGateFader(GetGateSpeed());
 				break;
 			case 7:
-				printf("Someone asks for the parameters \n");
+				//printf("Someone asks for the parameters \n");
 				send_parameters();
 			default:
 				break;
@@ -189,7 +171,7 @@ void wifi_receive(){
 
 int main(void) {
 	InitSound(); // Initialize the sound system
-	printf("Sound system initialized.\n");
+	//printf("Sound system initialized.\n");
  
 	InitTimer(); // Initialize the gate effect system
 
@@ -198,9 +180,9 @@ int main(void) {
 
 	#ifdef DEBUG
 		consoleDemoInit();
+		printf("\nNDSerum\n");
+		printf("Debug mode is on.\n");
 	#endif
-	printf("\nNDSerum\n");
-	printf("Debug mode is on.\n");
 
 	// Keys interrupt setup
 	REG_KEYCNT = (1 << 14) | KEY_A | KEY_B | KEY_X | KEY_Y | KEY_L | KEY_R | KEY_RIGHT | KEY_LEFT | KEY_UP | KEY_DOWN;
@@ -297,10 +279,10 @@ int main(void) {
 
 				// Frequency fader
 				if (touch.px >= freq_fader_start && touch.px <= freq_fader_start + fader_width) {
-					printf("Touch: %d, %d\n", touch.px, touch.py);
+					//printf("Touch: %d, %d\n", touch.px, touch.py);
 					int touchY = MIN(MAX(touch.py, 3), 189) - 3; // Calculating as if the screen was 186 pixels wide (instead of 192) because impossible to touch
 					int newFrequency = (((186-touchY) * 980) / 186) + 20;
-					printf("New frequency: %d\n", newFrequency);
+					//printf("New frequency: %d\n", newFrequency);
 					//newFrequency = newFrequency -  (newFrequency % 10); // Round to the nearest 10 because some freq don't work
 					if (newFrequency != GetFrequency()){
 						SetFrequency(newFrequency);

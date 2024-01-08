@@ -1,4 +1,8 @@
+#include <nds.h>
 #include <stdlib.h>
+#include "BGMain.h"
+#include <stdio.h>
+#include "sound.h"
 
 /*
  * Initialize the main engine

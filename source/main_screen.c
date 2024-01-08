@@ -1,8 +1,4 @@
 #include "main_screen.h"
-#include "BGMain.h"
-#include <nds.h>
-#include <stdio.h>
-#include "sound.h"
 
 #define VERTICALRANGE 171
 #define GENERALOFFSET 9
@@ -285,9 +281,7 @@ u8 tilePlus[64] = {
    0,0,0,9,9,0,0,0
 };
 
-
 void InitMainScreen() {
-
 	//Initialization of the VRAMs
 	VRAM_A_CR = VRAM_ENABLE | VRAM_A_MAIN_BG;
 	VRAM_B_CR = VRAM_ENABLE | VRAM_B_MAIN_BG;

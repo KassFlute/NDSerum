@@ -3,13 +3,6 @@
 int wifi_status = 0; // 0 = disabled, 1 = connecting, 2 = connected
 int sync_enabled = 0; // 0 = disabled, 1 = enabled
 
-union DataUnion {
-    float f;
-    int i;
-    WaveType w;
-    unsigned char bytes[4];
-}; // Type capable of storing multiple types of data in the same variable
-
 void send_freq(int freq) {
     union DataUnion freq_union;
     freq_union.i = freq;
@@ -91,9 +84,6 @@ void send_parameters() {
 }
 
 void send_ask_parameters(){
-    /*
-        * Ask the parameters to the others DSs (allow ds that join the sync to have the actual parameters)
-    */
     unsigned char byte_data_buff[5];
     byte_data_buff[0] = 7; // 7 = ask_parameters
     sendData(byte_data_buff, 5);
@@ -111,7 +101,7 @@ void set_sync_enabled(int enabled) {
     if (enabled) {
         if (!wifi_status) {
             irqDisable(IRQ_KEYS);
-            printf("Initializing WiFi...\n");
+            //printf("Initializing WiFi...\n");
             int old_mute_status = IsGated() ? 2 : (IsPlaying() ? 1 : 0);
             SetGate(0);
             SetGateButton(0);
@@ -120,9 +110,9 @@ void set_sync_enabled(int enabled) {
             wifi_status = 1;
             SetWifiStatus(wifi_status);
             if (initWiFi()) {
-                printf("Wifi initilaized successfully!\n");
+                //printf("Wifi initilaized successfully!\n");
                 if (openSocket()) {
-                    printf("Socket opened successfully!\n");
+                    //printf("Socket opened successfully!\n");
                     send_ask_parameters();
                     if (old_mute_status == 1) {
                         ResumeSound();
@@ -136,7 +126,7 @@ void set_sync_enabled(int enabled) {
                     sync_enabled = 1;
                     irqEnable(IRQ_KEYS);
                 } else {
-                    printf("Error opening socket !\n");
+                    //printf("Error opening socket !\n");
                     if (old_mute_status == 1) {
                         ResumeSound();
                         SetMuteButton(0);
@@ -150,7 +140,7 @@ void set_sync_enabled(int enabled) {
                     irqEnable(IRQ_KEYS);
                 }
             } else {
-                printf("Error initializing WiFi !\n");
+                //printf("Error initializing WiFi !\n");
                 if (old_mute_status == 1) {
                     ResumeSound();
                     SetMuteButton(0);
@@ -182,9 +172,6 @@ int get_wifi_status() {
 }
 
 void flush_wifi_buffer() {
-    /*
-        * Flush the wifi buffer
-    */
     unsigned char byte_data_buff[5];
     while (receiveData(byte_data_buff, 5) > 0){};
 }

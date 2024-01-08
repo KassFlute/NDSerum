@@ -2,15 +2,14 @@
 
 #include  <nds.h>
 #include <maxmod9.h>
+#include <stdlib.h>
+#include <stdio.h>
 
 #include "globals.h"
 #include "white_noise.h"
 #include "saw_wave.h"
 #include "sin_wave.h"
 #include "square_wave.h"
-
-#define MAX(a, b) (((a) > (b)) ? (a) : (b))
-#define MIN(a, b) (((a) < (b)) ? (a) : (b))
 
 #define SAMPLERATE 20000 // 48 kHz to go upto 24 kHz of sound 
 #define BUFFERLENGTH 400 //4800 // Length of the stream buffer -- THE SMALLER, THE QUICKER IT MUTES
@@ -19,14 +18,6 @@
 #define NUMBERPERIOD 20 // WTF is this ?
 #define MAXFREQ 1000 // Maximum frequency of the wave
 #define MINFREQ 20 // Minimum frequency of the wave
-
-//All the wave types
-typedef enum {
-    SAW_WAVE,
-    SIN_WAVE,
-    WHITE_NOISE,
-	SQUARE_WAVE
-} WaveType;
 
 #define waveTypeCount 4
 
