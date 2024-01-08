@@ -135,6 +135,13 @@ void set_sync_enabled(int enabled) {
                     irqEnable(IRQ_KEYS);
             } else {
                 printf("Error initializing WiFi or socket!\n");
+                if (old_mute_status == 1) {
+                    ResumeSound();
+                    SetMuteButton(0);
+                } else if (old_mute_status == 2) {
+                    SetGate(1);
+                    SetGateButton(1);
+                }
                 wifi_status = 0;
                 SetWifiStatus(wifi_status);
                 sync_enabled = 0;
