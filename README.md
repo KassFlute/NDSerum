@@ -3,6 +3,7 @@ NDSerum is a frequency generator for the Nintendo DS that supports multiple wave
 
 ## Application
 Here is a picture of the main screen of the application:
+<img src="docs/screenshots/image1.jpeg" height="500">
 
 ## Usage
 Here is a list of the key bindings usable in the app:
