@@ -26,3 +26,6 @@ keypad controls)
 ## Contributors
 - Cassien Roth Beneton ([@Kassflute](https://github.com/KassFlute))
 - Quentin Sandoz ([@TheTexanCodeur](https://github.com/TheTexanCodeur))
+
+## EPFL Course
+We created NDSerum in the context of the EPFL course `EE-310 "Microprogrammed Embedded Systems"` with professor David Atienza Alonso
